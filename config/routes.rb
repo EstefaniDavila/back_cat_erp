@@ -7,10 +7,11 @@ Rails.application.routes.draw do
           passwords: 'users/passwords',
           tokens: 'users/tokens'
         }
+        post 'users/refresh', to: 'users/authentication#refresh'
+
         namespace :users2 do
           put '/update/', to: 'users#update_avatar'
         end
-
         post 'password/forgot_password',          to: 'password_recoveries#forgot_password'
         post 'password/forgot_password_by_phone', to: 'password_recoveries#forgot_password_by_phone'
         post 'password/validate_code',            to: 'password_recoveries#validate_code'

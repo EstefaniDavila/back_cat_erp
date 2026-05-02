@@ -33,5 +33,6 @@ module Users
         render_error(401, message: I18n.t('usuario no encontrado'))
       end
     end
+    
   end
 end

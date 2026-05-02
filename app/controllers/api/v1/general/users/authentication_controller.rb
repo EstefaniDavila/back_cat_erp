@@ -3,14 +3,50 @@ module Users
     before_action :find_resource, only: [:create]
     before_action :authenticate_resource, only: [:destroy]
 
+    # def refresh
+    #   authenticate_resource
+    #   create_token_and_set_header(current_resource, resource_name)
+
+    #   render json: {
+    #     access_token: response.headers['Access-Token'],
+    #     refresh_token: response.headers['Refresh-Token'],
+    #     expire_at: response.headers['Expire-At']
+    #   }
+    # end
+
+    def refresh
+      refresh_token = params[:refresh_token]
+      return render json: { error: "refresh_token required" }, status: 400 if refresh_token.blank?
+      stored_token = RefreshToken.find_by(token: refresh_token)
+      return render json: { error: "Invalid refresh token" }, status: 401 if stored_token.nil?
+      return render json: { error: "Expired refresh token" }, status: 401 if stored_token.expire_at < Time.current
+      user = stored_token.user
+      stored_token.destroy
+      new_refresh = user.refresh_tokens.create!(
+        token: SecureRandom.hex(64),
+        expire_at: 1.week.from_now
+      )
+      create_token_and_set_header(user, :user)
+      render json: {
+        access_token: response.headers["Access-Token"],
+        refresh_token: new_refresh.token,
+        expire_at: response.headers["Expire-At"]
+      }
+    end
+
     def create
       if resource.authenticate(params[:authentication][:password])
         create_token_and_set_header(resource, resource_name)
         # full_name = Admin.find_by(document_number: resource.document_number)
+        refresh_token = resource.refresh_tokens.create!(
+          token: SecureRandom.hex(64),
+          expire_at: 1.week.from_now
+        )
         render json: {
           message: "Bienvenido a al ERP de Caterpillar",
           access_token: response.headers['Access-Token'],
-          refresh_token: response.headers['Refresh-Token'],
+          # refresh_token: response.headers['Refresh-Token'],
+          refresh_token: refresh_token.token,
           expire_at: response.headers["Expire-At"],
           user: {
             **resource.attributes.symbolize_keys,
@@ -26,7 +62,15 @@ module Users
     end
 
     def destroy
-      blacklist_token
+      token = request.headers['Authorization']&.split(' ')&.last
+      if token.present?
+        BlacklistedToken.create!(
+          token: token,
+          user: current_resource,
+          expire_at: Time.current + 1.day
+        )
+      end
+      # blacklist_token
       render_success(message: I18n.t('api_guard.authentication.signed_out'))
     end
 
