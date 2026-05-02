@@ -33,3 +33,8 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/config/credentials/*.key
+
+/config/keys/*.pem
+/config/keys/private.pem
+/config/keys/public.pem
