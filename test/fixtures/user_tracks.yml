@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  os_data: MyString
+  remote_ip: MyString
+  browser_data: MyString
+  aud: MyString
+  user: one
+
+two:
+  os_data: MyString
+  remote_ip: MyString
+  browser_data: MyString
+  aud: MyString
+  user: two
