@@ -1,16 +1,7 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      namespace :admin do
-        #######################EJEEMPLOO##############################
-        get '/areas',                                         to: 'areas#index'
-        get '/areas/select',                                  to: 'areas#index_select'
-        get '/areas_program/:code',                           to: 'areas#history'
-        post '/areas',                                        to: 'areas#create'
-        put '/areas/:id',                                     to: 'areas#update'
-        delete '/areas/destroy/:id',                          to: 'areas#destroy'
-
-
+      namespace :advisor do
         ####################### CLIENTES ##############################
         get '/clients',                                       to: 'clients#index'
         get '/clients/:code',                                 to: 'clients#show'
@@ -22,20 +13,17 @@ Rails.application.routes.draw do
         get '/leads',                                         to: 'leads#index'
         get '/leads/:code',                                   to: 'leads#show'
         put '/leads/:id',                                     to: 'leads#update'
-        put '/leads/:id/assign/:advisor_id',                  to: 'leads#assign'
 
         ####################### QUOTATIONS #########################
         get '/quotations',                                    to: 'quotations#index'
         get '/quotations/:code',                              to: 'quotations#show'
-        put '/quotations/:id/approve',                        to: 'quotations#approve'
-        put '/quotations/:id/reject',                         to: 'quotations#reject'
-        put '/quotations/:id/client_accept',                  to: 'quotations#client_accept'
+        post '/quotations',                                   to: 'quotations#create'
         put '/quotations/:id',                                to: 'quotations#update'
+        put '/quotations/:id/send_for_approval',              to: 'quotations#send_for_approval'
 
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
-        get '/area_requests/:id',                             to: 'area_requests#show'
-        put '/area_requests/:id/reply',                       to: 'area_requests#reply'
+        post '/area_requests',                                to: 'area_requests#create'
       end
     end
   end
