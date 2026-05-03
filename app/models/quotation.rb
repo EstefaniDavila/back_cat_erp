@@ -48,13 +48,17 @@ class Quotation < ApplicationRecord
           vehicle_id: quotation_items.first&.product_id # Asumiendo que el primer item es el vehículo
         )
       elsif quotation_type == 'maintenance'
-        create_maintenance!(
-          code: "MNT-#{code}",
-          status: 'pending',
-          type: 'corrective',
-          client_id: client_id,
-          requested_at: Time.current
-        )
+        if maintenance.present?
+          maintenance.update!(status: 'approved_for_repair')
+        else
+          create_maintenance!(
+            code: "MNT-#{code}",
+            status: 'pending',
+            maintenance_type: 'corrective',
+            client_id: client_id,
+            requested_at: Time.current
+          )
+        end
       end
     end
     true
