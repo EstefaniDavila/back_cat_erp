@@ -13,6 +13,13 @@ Rails.application.routes.draw do
         get '/leads',                                         to: 'leads#index'
         get '/leads/:code',                                   to: 'leads#show'
         put '/leads/:id',                                     to: 'leads#update'
+
+        ####################### QUOTATIONS #########################
+        get '/quotations',                                    to: 'quotations#index'
+        get '/quotations/:code',                              to: 'quotations#show'
+        post '/quotations',                                   to: 'quotations#create'
+        put '/quotations/:id',                                to: 'quotations#update'
+        put '/quotations/:id/send_for_approval',              to: 'quotations#send_for_approval'
       end
     end
   end
