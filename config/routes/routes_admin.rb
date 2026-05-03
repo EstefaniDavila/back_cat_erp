@@ -31,6 +31,11 @@ Rails.application.routes.draw do
         put '/quotations/:id/reject',                         to: 'quotations#reject'
         put '/quotations/:id/client_accept',                  to: 'quotations#client_accept'
         put '/quotations/:id',                                to: 'quotations#update'
+
+        ####################### AREA REQUESTS ######################
+        get '/area_requests',                                 to: 'area_requests#index'
+        get '/area_requests/:id',                             to: 'area_requests#show'
+        put '/area_requests/:id/reply',                       to: 'area_requests#reply'
       end
     end
   end
