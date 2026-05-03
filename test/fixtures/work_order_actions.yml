@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  work_order: one
+  action: MyString
+  description: MyText
+  evidence: MyString
+  performed_by: one
+
+two:
+  work_order: two
+  action: MyString
+  description: MyText
+  evidence: MyString
+  performed_by: two

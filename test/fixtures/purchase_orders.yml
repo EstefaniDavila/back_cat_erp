@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  supplier: one
+  requested_by: one
+  status: MyString
+  total: 9.99
+  expected_date: 2026-05-03
+  received_at: 2026-05-03 01:26:17
+  notes: MyText
+
+two:
+  code: MyString
+  supplier: two
+  requested_by: two
+  status: MyString
+  total: 9.99
+  expected_date: 2026-05-03
+  received_at: 2026-05-03 01:26:17
+  notes: MyText

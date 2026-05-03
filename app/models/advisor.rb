@@ -1,4 +1,6 @@
 class Advisor < ApplicationRecord
+  include Sanitizable
+
   after_create :generate_user
 
   has_one :user, as: :roleable, dependent: :destroy
@@ -13,4 +15,8 @@ class Advisor < ApplicationRecord
       roleable: self
     )
   end
+  has_many :client_advisors, dependent: :destroy
+  has_many :leads, foreign_key: :assigned_to_id
+  has_many :quotations
+  has_many :sales_orders
 end

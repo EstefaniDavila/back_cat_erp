@@ -5,6 +5,7 @@ class CreateUserTracks < ActiveRecord::Migration[7.0]
         t.string :remote_ip
         t.string :browser_data
         t.string :aud
+        
         t.references :user,type: :uuid, null: false, foreign_key: true
       t.timestamps
     end

@@ -1,4 +1,6 @@
 class Manager < ApplicationRecord
+  include Sanitizable
+
   after_create :generate_user
 
   has_one :user, as: :roleable, dependent: :destroy

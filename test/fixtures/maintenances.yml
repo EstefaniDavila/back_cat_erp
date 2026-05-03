@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  client: one
+  customer_asset: one
+  enterprise_vehicle: one
+  quotation: one
+  description: MyText
+  maintenance_type: MyString
+  priority: MyString
+  status: MyString
+  requested_at: 2026-05-03 01:26:02
+  scheduled_at: 2026-05-03 01:26:02
+  completed_at: 2026-05-03 01:26:02
+
+two:
+  code: MyString
+  client: two
+  customer_asset: two
+  enterprise_vehicle: two
+  quotation: two
+  description: MyText
+  maintenance_type: MyString
+  priority: MyString
+  status: MyString
+  requested_at: 2026-05-03 01:26:02
+  scheduled_at: 2026-05-03 01:26:02
+  completed_at: 2026-05-03 01:26:02

@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Sanitizable
+
   belongs_to :roleable, polymorphic: true
   before_create :set_default_data
 
@@ -46,4 +48,6 @@ class User < ApplicationRecord
     self.save!
   end
 
+  has_many :refresh_tokens, dependent: :destroy
+  has_many :user_tracks, dependent: :destroy
 end

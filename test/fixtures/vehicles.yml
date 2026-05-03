@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  vehicle_model: one
+  serial: MyString
+  manufacture_year: 1
+  hours_used: 9.99
+  status: MyString
+  price_per_hour: 9.99
+  price_per_day: 9.99
+  location: MyString
+
+two:
+  product: two
+  vehicle_model: two
+  serial: MyString
+  manufacture_year: 1
+  hours_used: 9.99
+  status: MyString
+  price_per_hour: 9.99
+  price_per_day: 9.99
+  location: MyString

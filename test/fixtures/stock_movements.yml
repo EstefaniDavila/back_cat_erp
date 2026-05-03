@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  spare_part: one
+  movement_type: MyString
+  quantity: 1
+  reference: MyString
+  performed_by: one
+
+two:
+  spare_part: two
+  movement_type: MyString
+  quantity: 1
+  reference: MyString
+  performed_by: two

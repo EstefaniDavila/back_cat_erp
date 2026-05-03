@@ -1,4 +1,6 @@
 class Technician < ApplicationRecord
+  include Sanitizable
+
   after_create :generate_user
 
   has_one :user, as: :roleable, dependent: :destroy
@@ -13,4 +15,6 @@ class Technician < ApplicationRecord
       roleable: self
     )
   end
+  has_many :work_orders, foreign_key: :assigned_to_id
+  has_many :work_order_actions, foreign_key: :performed_by_id
 end

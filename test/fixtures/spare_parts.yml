@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  spare_part_category: one
+  part_number: MyString
+  manufacturer_brand: MyString
+  stock: 1
+  min_stock: 1
+  sale_unit: MyString
+  is_critical: false
+
+two:
+  product: two
+  spare_part_category: two
+  part_number: MyString
+  manufacturer_brand: MyString
+  stock: 1
+  min_stock: 1
+  sale_unit: MyString
+  is_critical: false

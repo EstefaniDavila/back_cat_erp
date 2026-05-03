@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  maintenance: one
+  code: MyString
+  assigned_to: one
+  diagnosis: MyText
+  diagnosis_result: MyString
+  work_order_type: MyString
+  status: MyString
+  scheduled_date: 2026-05-03 01:26:04
+  closed_date: 2026-05-03 01:26:04
+
+two:
+  maintenance: two
+  code: MyString
+  assigned_to: two
+  diagnosis: MyText
+  diagnosis_result: MyString
+  work_order_type: MyString
+  status: MyString
+  scheduled_date: 2026-05-03 01:26:04
+  closed_date: 2026-05-03 01:26:04

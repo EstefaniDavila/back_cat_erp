@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  spare_part: one
+  vehicle_model: one
+
+two:
+  spare_part: two
+  vehicle_model: two

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  client: one
+  advisor: one
+  role: MyString
+  active: false
+  assigned_at: 2026-05-03 01:19:17
+
+two:
+  client: two
+  advisor: two
+  role: MyString
+  active: false
+  assigned_at: 2026-05-03 01:19:17

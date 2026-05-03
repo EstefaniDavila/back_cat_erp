@@ -1,4 +1,6 @@
 class LogisticsUser < ApplicationRecord
+  include Sanitizable
+
   after_create :generate_user
 
   has_one :user, as: :roleable, dependent: :destroy
@@ -13,4 +15,5 @@ class LogisticsUser < ApplicationRecord
       roleable: self
     )
   end
+  has_many :delivery_guides, foreign_key: :driver_id
 end

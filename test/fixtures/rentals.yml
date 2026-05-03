@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  quotation: one
+  client: one
+  vehicle: one
+  start_date: 2026-05-03
+  end_date: 2026-05-03
+  status: MyString
+  delivery_date: 2026-05-03 01:22:02
+  return_date: 2026-05-03 01:22:02
+  vehicle_condition_delivery: MyText
+  vehicle_condition_return: MyText
+  total: 9.99
+  notes: MyText
+
+two:
+  code: MyString
+  quotation: two
+  client: two
+  vehicle: two
+  start_date: 2026-05-03
+  end_date: 2026-05-03
+  status: MyString
+  delivery_date: 2026-05-03 01:22:02
+  return_date: 2026-05-03 01:22:02
+  vehicle_condition_delivery: MyText
+  vehicle_condition_return: MyText
+  total: 9.99
+  notes: MyText

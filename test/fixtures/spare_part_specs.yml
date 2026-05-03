@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  spare_part: one
+  key: MyString
+  value: MyString
+  unit: MyString
+
+two:
+  spare_part: two
+  key: MyString
+  value: MyString
+  unit: MyString
