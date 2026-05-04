@@ -32,6 +32,18 @@ Rails.application.routes.draw do
         post '/maintenances',                                 to: 'maintenances#create'
         put '/maintenances/:id',                              to: 'maintenances#update'
         delete '/maintenances/:id',                           to: 'maintenances#destroy'
+
+        ####################### WORK ORDERS ######################
+        get '/work_orders',                                   to: 'work_orders#index'
+        post '/work_orders',                                  to: 'work_orders#create'
+        put '/work_orders/:id',                               to: 'work_orders#update'
+        delete '/work_orders/:id',                            to: 'work_orders#destroy'
+
+        ####################### WORK ORDER ACTIONS ######################
+        get '/work_order_actions',                            to: 'work_order_actions#index'
+        post '/work_order_actions',                           to: 'work_order_actions#create'
+        put '/work_order_actions/:id',                        to: 'work_order_actions#update'
+        delete '/work_order_actions/:id',                     to: 'work_order_actions#destroy'
       end
     end
   end

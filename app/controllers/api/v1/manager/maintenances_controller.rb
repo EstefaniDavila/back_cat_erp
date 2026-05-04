@@ -47,6 +47,16 @@ class Api::V1::Manager::MaintenancesController < ApplicationController
     end
   end
 
+  def destroy
+    maintenance = Maintenance.find(params[:id])
+    if maintenance.work_orders.empty? && maintenance.maintenance_reports.empty?
+      maintenance.destroy
+      render json: { message: "Mantenimiento eliminado con éxito" }, status: :ok
+    else
+      render json: { message: "Ocurrió un error al eliminar el mantenimiento", errors: maintenance.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def maintenance_params
