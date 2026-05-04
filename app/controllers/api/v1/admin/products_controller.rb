@@ -34,7 +34,7 @@ module Api
           @product = Product.new(product_params)
           @product.created_by_id = current_user&.id
           @product.updated_by_id = current_user&.id
-          
+
           if @product.save
             render json: @product, status: :created
           else
