@@ -10,4 +10,12 @@ class Client < ApplicationRecord
   has_many :sales_orders
   has_many :rentals
   has_many :maintenances
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["code", "business_name", "document_type", "document_number", "contact_name", "email", "status"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["client_advisors", "leads"]
+  end
 end
