@@ -93,6 +93,55 @@ Rails.application.routes.draw do
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
         put '/area_requests/:id/reply',                       to: 'area_requests#reply'
+       ####################### Categorías de Repuestos ##############################
+        get    '/spare_part_categories',                   to: 'spare_part_categories#index'
+        get    '/spare_part_categories/select',            to: 'spare_part_categories#index_select'
+        get    '/spare_part_categories/:id',               to: 'spare_part_categories#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/spare_part_categories',                   to: 'spare_part_categories#create'
+        put    '/spare_part_categories/:id',               to: 'spare_part_categories#update'
+        patch  '/spare_part_categories/:id',               to: 'spare_part_categories#update'
+        delete '/spare_part_categories/:id',               to: 'spare_part_categories#destroy'
+
+        ####################### Repuestos ##############################
+        get    '/spare_parts',                             to: 'spare_parts#index'
+        get    '/spare_parts/:id',                         to: 'spare_parts#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/spare_parts',                             to: 'spare_parts#create'
+        put    '/spare_parts/:id',                         to: 'spare_parts#update'
+        patch  '/spare_parts/:id',                         to: 'spare_parts#update'
+        delete '/spare_parts/:id',                         to: 'spare_parts#destroy'
+
+        ####################### Especificaciones de Repuestos ##############################
+        get    '/spare_part_specs',                        to: 'spare_part_specs#index'
+        get    '/spare_part_specs/:id',                    to: 'spare_part_specs#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/spare_part_specs',                        to: 'spare_part_specs#create'
+        put    '/spare_part_specs/:id',                    to: 'spare_part_specs#update'
+        patch  '/spare_part_specs/:id',                    to: 'spare_part_specs#update'
+        delete '/spare_part_specs/:id',                    to: 'spare_part_specs#destroy'
+
+        # Rutas anidadas para especificaciones
+        get    '/spare_parts/:spare_part_id/specs',        to: 'spare_part_specs#index_by_spare_part'
+        post   '/spare_parts/:spare_part_id/specs/bulk_create', to: 'spare_part_specs#bulk_create'
+        delete '/spare_parts/:spare_part_id/specs/bulk_destroy', to: 'spare_part_specs#bulk_destroy'
+
+        ####################### Compatibilidades de Repuestos ##############################
+        get    '/spare_part_compatibilities',              to: 'spare_part_compatibilities#index'
+        get    '/spare_part_compatibilities/:id',          to: 'spare_part_compatibilities#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        delete '/spare_part_compatibilities/:id',          to: 'spare_part_compatibilities#destroy'
+
+        # Rutas anidadas para compatibilidades
+        get    '/spare_parts/:spare_part_id/compatibilities', to: 'spare_part_compatibilities#index_by_spare_part'
+        post   '/spare_parts/:spare_part_id/compatibilities', to: 'spare_part_compatibilities#create'
+        post   '/spare_parts/:spare_part_id/compatibilities/bulk_create', to: 'spare_part_compatibilities#bulk_create'
+
+        ####################### Proveedores ##############################
+        get    '/suppliers',                   to: 'suppliers#index'
+        get    '/suppliers/select',            to: 'suppliers#index_select'
+        get    '/suppliers/:id',               to: 'suppliers#show'
+        post   '/suppliers',                   to: 'suppliers#create'
+        put    '/suppliers/:id',               to: 'suppliers#update'
+        patch  '/suppliers/:id',               to: 'suppliers#update'
+        delete '/suppliers/:id',               to: 'suppliers#destroy'
+
       end
     end
   end

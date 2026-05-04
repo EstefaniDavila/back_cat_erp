@@ -88,13 +88,6 @@ class Product < ApplicationRecord
     end
   end
   
-  def create_type_specific_record
-    if vehicle? && !vehicle.present?
-      build_vehicle.save!
-    elsif spare_part? && !spare_part.present?
-      build_spare_part.save!
-    end
-  end
   
   def sync_type_specific_status
     if saved_change_to_active? && specific.present?
