@@ -109,7 +109,7 @@ module Api
           render json: { error: 'Producto no encontrado' }, status: :not_found
         end
         
-        # ✅ AGREGAR ESTE MÉTODO
+
         def filtered_products
           products = Product.all
           
