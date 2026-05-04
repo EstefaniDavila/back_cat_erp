@@ -141,6 +141,18 @@ Rails.application.routes.draw do
         put    '/suppliers/:id',               to: 'suppliers#update'
         patch  '/suppliers/:id',               to: 'suppliers#update'
         delete '/suppliers/:id',               to: 'suppliers#destroy'
+        ####################### Gestión de Productos por Proveedor ##############################
+        get    '/supplier_products',                   to: 'supplier_products#index'
+        get    '/supplier_products/select',            to: 'supplier_products#index_select'
+        get    '/supplier_products/:id',               to: 'supplier_products#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/supplier_products',                   to: 'supplier_products#create'
+        put    '/supplier_products/:id',               to: 'supplier_products#update'
+        patch  '/supplier_products/:id',               to: 'supplier_products#update'
+        delete '/supplier_products/:id',               to: 'supplier_products#destroy'
+
+        # Rutas anidadas 
+        get    '/suppliers/:supplier_id/supplier_products', to: 'supplier_products#index_by_supplier'
+        get    '/products/:product_id/supplier_products',   to: 'supplier_products#index_by_product'
 
       end
     end
