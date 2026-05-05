@@ -154,6 +154,30 @@ Rails.application.routes.draw do
         get    '/suppliers/:supplier_id/supplier_products', to: 'supplier_products#index_by_supplier'
         get    '/products/:product_id/supplier_products',   to: 'supplier_products#index_by_product'
 
+        ####################### Órdenes de Compra ##############################
+        get    '/purchase_orders',                   to: 'purchase_orders#index'
+        get    '/purchase_orders/select',            to: 'purchase_orders#index_select'
+        get    '/purchase_orders/:id',               to: 'purchase_orders#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/purchase_orders',                   to: 'purchase_orders#create'
+        put    '/purchase_orders/:id',               to: 'purchase_orders#update'
+        patch  '/purchase_orders/:id',               to: 'purchase_orders#update'
+        delete '/purchase_orders/:id',               to: 'purchase_orders#destroy'
+        put    '/purchase_orders/:id/receive',       to: 'purchase_orders#receive'
+        put    '/purchase_orders/:id/cancel',        to: 'purchase_orders#cancel' 
+        get    '/purchase_orders/by_supplier/:supplier_id', to: 'purchase_orders#by_supplier'
+
+        ####################### Ítems de Orden de Compra ##############################
+        get    '/purchase_order_items',                   to: 'purchase_order_items#index'
+        get    '/purchase_order_items/:id',               to: 'purchase_order_items#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/purchase_order_items',                   to: 'purchase_order_items#create'
+        put    '/purchase_order_items/:id',               to: 'purchase_order_items#update'
+        patch  '/purchase_order_items/:id',               to: 'purchase_order_items#update'
+        delete '/purchase_order_items/:id',               to: 'purchase_order_items#destroy'
+
+        # Rutas anidadas
+        get    '/purchase_orders/:purchase_order_id/items', to: 'purchase_order_items#index_by_order'
+        post   '/purchase_orders/:purchase_order_id/items/bulk_create', to: 'purchase_order_items#bulk_create'
+
       end
     end
   end
