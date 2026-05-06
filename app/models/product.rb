@@ -6,8 +6,11 @@ class Product < ApplicationRecord
   }
   
   # Associations
-  has_one :vehicle, foreign_key: :product_id, dependent: :destroy
-  has_one :spare_part, foreign_key: :product_id, dependent: :destroy
+  has_one :vehicle, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
+  has_one :spare_part, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
+
+  accepts_nested_attributes_for :vehicle, allow_destroy: true
+  accepts_nested_attributes_for :spare_part, allow_destroy: true
   
   belongs_to :created_by, class_name: 'User'
   belongs_to :updated_by, class_name: 'User', optional: true
@@ -27,11 +30,10 @@ class Product < ApplicationRecord
   validates :base_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :active, inclusion: { in: [true, false] }
   
-  validate :validate_type_specific_attributes
+  #validate :validate_type_specific_attributes
   
   # Callbacks
-  before_validation :normalize_code
-  #after_create :create_type_specific_record
+  after_validation :normalize_code
   after_update :sync_type_specific_status
 
   # Scopes
@@ -79,6 +81,14 @@ class Product < ApplicationRecord
   def normalize_code
     self.code = code.upcase.strip if code.present?
   end
+
+    def create_type_specific_record
+  if vehicle? && vehicle.nil?
+    build_vehicle.save!
+  elsif spare_part? && spare_part.nil?
+    build_spare_part.save!
+  end
+end
   
   def validate_type_specific_attributes
     if vehicle?
@@ -88,13 +98,6 @@ class Product < ApplicationRecord
     end
   end
   
-  def create_type_specific_record
-    if vehicle? && !vehicle.present?
-      build_vehicle.save!
-    elsif spare_part? && !spare_part.present?
-      build_spare_part.save!
-    end
-  end
   
   def sync_type_specific_status
     if saved_change_to_active? && specific.present?

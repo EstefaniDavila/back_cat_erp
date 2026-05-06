@@ -37,7 +37,11 @@ module Api
           if @product.save
             render json: @product, status: :ok
           else
-            render json: { errors: @product.errors.full_messages }, status: :unprocessable_entity
+            render json: {
+          error: "No se pudo crear el producto",
+                   messages: @product.errors.full_messages,
+                    details: @product.spare_part&.errors&.full_messages
+        }, status: :unprocessable_entity
           end
         end
         
