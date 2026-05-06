@@ -34,7 +34,7 @@ class Api::V1::Client::PublicController < ApplicationController
         )
 
         # Enviar correo de bienvenida
-        ClientMailer.welcome_email(user, generated_password).deliver_later
+        # ClientMailer.welcome_email(user, generated_password).deliver_later
       end
 
       # 2. Crear el Lead (Prospecto) para que el Manager lo asigne

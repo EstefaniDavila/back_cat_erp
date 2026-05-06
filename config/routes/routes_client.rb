@@ -8,8 +8,9 @@ Rails.application.routes.draw do
 
         # --- RUTAS PRIVADAS (PORTAL DE CLIENTES) ---
         # Estas requerirán autenticación en el futuro (current_user)
-        # get '/my_quotations', to: 'portal#quotations'
-        # get '/my_maintenances', to: 'portal#maintenances'
+        get '/portal/quotations', to: 'portal#quotations'
+        get '/portal/maintenances', to: 'portal#maintenances'
+        get '/portal/orders', to: 'portal#orders'
 
       end
     end

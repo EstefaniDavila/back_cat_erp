@@ -50,8 +50,7 @@ module Users
           expire_at: response.headers["Expire-At"],
           user: {
             **resource.attributes.symbolize_keys,
-            # full_name: full_name.full_name
-            full_name: resource.roleable&.full_name
+            full_name: resource.roleable.try(:full_name) || resource.roleable.try(:business_name) || resource.roleable.try(:contact_name) || "Usuario"
           },
           # rol: resource.roleable_id,
           rol: resource.roleable_type
@@ -110,24 +109,24 @@ module Users
     #   render_error(422, message: I18n.t('api_guard.authentication.invalid_login_credentials'))
     # end
     def find_resource
-      if params[:authentication].present? && params[:authentication][:document_number].present? && params[:authentication][:password].present?
-        document_number = params[:authentication][:document_number].downcase.strip
+      if params[:authentication].present? && params[:authentication][:password].present?
         password = params[:authentication][:password]
         
-        puts "Document number: #{document_number}"
-        puts "Password: #{password}"
-    
-        self.resource = User.find_by("document_number = ?", document_number)
+        if params[:authentication][:document_number].present?
+          login_value = params[:authentication][:document_number].downcase.strip
+          self.resource = User.find_by("document_number = ?", login_value)
+        elsif params[:authentication][:email].present?
+          login_value = params[:authentication][:email].downcase.strip
+          self.resource = User.find_by("email = ?", login_value)
+        else
+          puts "Missing email or document_number"
+          return render_error(422, message: I18n.t('api_guard.authentication.invalid_login_credentials'))
+        end
     
         if resource
-          puts "User found: #{resource.inspect}"
-          
           begin
             if resource.authenticate(password)
-              puts "Authentication successful"
               return
-            else
-              puts "Authentication failed"
             end
           rescue BCrypt::Errors::InvalidHash => e
             puts "Invalid password hash: #{e.message}"
