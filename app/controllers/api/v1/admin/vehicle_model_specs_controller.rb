@@ -3,11 +3,10 @@ module Api
   module V1
     module Admin
       class VehicleModelSpecsController < ApplicationController
-        #before_action :set_vehicle_model_spec, only: [:show, :update, :destroy]
-        #before_action :set_vehicle_model, only: [:index_by_model]
-        
-        # Deshabilita CSRF para este controlador
-        protect_from_forgery with: :null_session, only: [:create, :update, :destroy]
+        protect_from_forgery with: :null_session
+
+        before_action :set_vehicle_model_spec, only: [:show, :update, :destroy]
+        before_action :set_vehicle_model, only: [:index_by_model]
 
         # GET /api/v1/admin/vehicle_model_specs
         def index

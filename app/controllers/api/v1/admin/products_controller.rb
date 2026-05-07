@@ -135,19 +135,49 @@ module Api
           products
         end
         
-        def product_json(product)
-          {
-            id: product.id,
-            code: product.code,
-            name: product.name,
-            product_type: product.product_type,
-            description: product.description,
-            base_price: product.base_price.to_f,
-            active: product.active,
-            created_at: product.created_at,
-            updated_at: product.updated_at
-          }
-        end
+        # app/controllers/api/v1/admin/products_controller.rb
+def product_json(product)
+  json = {
+    id: product.id,
+    code: product.code,
+    name: product.name,
+    product_type: product.product_type,
+    description: product.description,
+    base_price: product.base_price.to_f,
+    active: product.active,
+    created_at: product.created_at,
+    updated_at: product.updated_at
+  }
+  
+  # Incluir datos específicos según el tipo
+  if product.vehicle?
+    json[:vehicle] = {
+      serial: product.vehicle&.serial,
+      manufacture_year: product.vehicle&.manufacture_year,
+      hours_used: product.vehicle&.hours_used,
+      status: product.vehicle&.status,
+      price_per_hour: product.vehicle&.price_per_hour.to_f,
+      price_per_day: product.vehicle&.price_per_day.to_f,
+      location: product.vehicle&.location,
+      vehicle_model: product.vehicle&.vehicle_model&.model,
+      vehicle_brand: product.vehicle&.vehicle_model&.brand
+    }
+  elsif product.spare_part?
+    json[:spare_part] = {
+      part_number: product.spare_part&.part_number,
+      manufacturer_brand: product.spare_part&.manufacturer_brand,
+      stock: product.spare_part&.stock || 0,
+      min_stock: product.spare_part&.min_stock || 5,
+      sale_unit: product.spare_part&.sale_unit,
+      is_critical: product.spare_part&.is_critical,
+      category: product.spare_part&.spare_part_category&.name
+    }
+  end
+  
+  json
+end
+
+        
         
         def product_params
           params.require(:product).permit(

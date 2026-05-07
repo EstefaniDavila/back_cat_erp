@@ -94,7 +94,7 @@ module Api
 
         def purchase_order_params
           params.require(:purchase_order).permit(
-            :supplier_id, :requested_by_id, :expected_date, :notes, :status,
+            :supplier_id, :requested_by_id, :expected_date, :received_at,:notes, :status,
             purchase_order_items_attributes: [:id, :product_id, :quantity, :unit_cost, :_destroy,]
           )
         end

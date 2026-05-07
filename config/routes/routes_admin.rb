@@ -189,6 +189,39 @@ Rails.application.routes.draw do
         # Kardex por repuesto 
         get '/stock_movements/spare_part/:spare_part_id', to: 'stock_movements#by_spare_part'
 
+        ####################### Órdenes de Despacho ##############################
+        get    '/dispatch_orders',                   to: 'dispatch_orders#index'
+        get    '/dispatch_orders/select',            to: 'dispatch_orders#index_select'
+        get    '/dispatch_orders/:id',               to: 'dispatch_orders#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/dispatch_orders',                   to: 'dispatch_orders#create'
+        put    '/dispatch_orders/:id',               to: 'dispatch_orders#update'
+        patch  '/dispatch_orders/:id',               to: 'dispatch_orders#update'
+        delete '/dispatch_orders/:id',               to: 'dispatch_orders#destroy'
+
+        # Acciones especiales
+        put    '/dispatch_orders/:id/dispatch',      to: 'dispatch_orders#dispatch'
+        put    '/dispatch_orders/:id/deliver',       to: 'dispatch_orders#deliver'
+        put    '/dispatch_orders/:id/cancel',        to: 'dispatch_orders#cancel'
+        get    '/dispatch_orders/by_status/:status', to: 'dispatch_orders#by_status'
+        get    '/dispatch_orders/by_sales_order/:sales_order_id', to: 'dispatch_orders#by_sales_order'
+        get    '/dispatch_orders/by_rental/:rental_id', to: 'dispatch_orders#by_rental'
+
+        ####################### Ítems de Despacho ##############################
+        get    '/dispatch_items',                   to: 'dispatch_items#index'
+        get    '/dispatch_items/:id',               to: 'dispatch_items#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/dispatch_items',                   to: 'dispatch_items#create'
+        put    '/dispatch_items/:id',               to: 'dispatch_items#update'
+        patch  '/dispatch_items/:id',               to: 'dispatch_items#update'
+        delete '/dispatch_items/:id',               to: 'dispatch_items#destroy'
+
+        # Rutas anidadas
+        get    '/dispatch_orders/:dispatch_order_id/items', to: 'dispatch_items#index_by_order'
+        post   '/dispatch_orders/:dispatch_order_id/items/bulk_create', to: 'dispatch_items#bulk_create'
+
+        # Acciones para marcar/desmarcar items
+        patch  '/dispatch_items/:id/check',        to: 'dispatch_items#check'
+        patch  '/dispatch_items/:id/uncheck',      to: 'dispatch_items#uncheck'
+
       end
     end
   end
