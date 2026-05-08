@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_03_062623) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activity_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "action"
+    t.string "browser"
+    t.string "ip_address"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+  end
 
   create_table "admins", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name", default: "", null: false
@@ -623,6 +634,17 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_03_062623) do
     t.index ["vehicle_model_id"], name: "index_vehicles_on_vehicle_model_id"
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.string "whodunnit"
+    t.datetime "created_at"
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.string "event", null: false
+    t.text "object"
+    t.text "object_changes"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  end
+
   create_table "warehousemen", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -676,6 +698,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_03_062623) do
     t.index ["maintenance_id"], name: "index_work_orders_on_maintenance_id"
   end
 
+  add_foreign_key "activity_logs", "users"
   add_foreign_key "area_requests", "quotations"
   add_foreign_key "area_requests", "users", column: "created_by_id"
   add_foreign_key "area_requests", "users", column: "reviewed_by_id"

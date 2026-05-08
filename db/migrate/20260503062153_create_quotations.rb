@@ -14,7 +14,7 @@ class CreateQuotations < ActiveRecord::Migration[7.0]
       t.datetime :rejected_at
 
       t.references :client, null: false, foreign_key: true, type: :uuid
-      t.references :advisor, null: false, foreign_key: true, type: :uuid
+      t.references :advisor, null: true, foreign_key: true, type: :uuid
       t.references :lead, null: true, foreign_key: true, type: :uuid
       t.timestamps
     end

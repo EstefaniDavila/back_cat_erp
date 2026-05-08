@@ -1,10 +1,11 @@
 class Quotation < ApplicationRecord
   include CodeGenerator
   include Sanitizable
+  has_paper_trail
 
   belongs_to :client
-  belongs_to :advisor
-  belongs_to :lead
+  belongs_to :advisor, optional: true
+  belongs_to :lead, optional: true
   has_many :quotation_items, dependent: :destroy
   has_many :quotation_comments, dependent: :destroy
   has_many :quotation_status_histories, dependent: :destroy

@@ -40,11 +40,17 @@ gem "dry-initializer"
 gem "faraday"
 gem "base64", "0.1.1"
 gem 'faraday-retry'
+gem 'lograge'
+gem 'paper_trail'
+gem 'connection_pool', '< 3.0'
+gem 'sidekiq-cron'
 
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
+  
+gem 'dotenv-rails', groups: [:development, :test, :replica]
 
 group :development do
   gem "web-console"
@@ -62,4 +68,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem "minitest", "< 6.0"
 end

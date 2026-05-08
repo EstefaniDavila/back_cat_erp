@@ -1,0 +1,7 @@
+# config/schedule.yml
+
+database_backup_daily:
+  cron: "25 20 * * *"
+  class: "DatabaseBackupJob"
+  queue: default
+  description: "Backup diario de la base de datos a las 8:25 PM"

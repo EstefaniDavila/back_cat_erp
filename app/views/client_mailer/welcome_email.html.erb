@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>¡Hola <%= @client.business_name || @client.contact_name %>, bienvenido a nuestro portal!</h1>
+    <p>
+      Hemos recibido tu solicitud de información/cotización. Nuestro equipo ya la está evaluando y se pondrá en contacto contigo pronto.
+    </p>
+    <p>
+      Mientras tanto, hemos creado una cuenta para ti en nuestro Portal de Clientes, donde podrás hacer seguimiento a tus solicitudes, cotizaciones y mantenimientos.
+    </p>
+    <p>
+      Tus credenciales de acceso son:
+    </p>
+    <ul>
+      <li><strong>Usuario/Email:</strong> <%= @user.email %></li>
+      <li><strong>Contraseña temporal:</strong> <%= @raw_password %></li>
+    </ul>
+    <p>
+      Te recomendamos cambiar esta contraseña la primera vez que ingreses.
+    </p>
+    <p>¡Gracias por confiar en nosotros!</p>
+  </body>
+</html>

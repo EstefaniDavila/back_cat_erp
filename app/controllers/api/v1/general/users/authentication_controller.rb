@@ -1,5 +1,6 @@
 module Users
   class Api::V1::General::Users::AuthenticationController < ApiGuard::AuthenticationController
+    include Loggable
     before_action :find_resource, only: [:create]
     before_action :authenticate_resource, only: [:destroy]
 
@@ -37,7 +38,7 @@ module Users
     def create
       if resource.authenticate(params[:authentication][:password])
         create_token_and_set_header(resource, resource_name)
-        # full_name = Admin.find_by(document_number: resource.document_number)
+        log_activity("Inicio de sesión exitoso", nil, resource)
         refresh_token = resource.refresh_tokens.create!(
           token: SecureRandom.hex(64),
           expire_at: 1.week.from_now
@@ -50,8 +51,7 @@ module Users
           expire_at: response.headers["Expire-At"],
           user: {
             **resource.attributes.symbolize_keys,
-            # full_name: full_name.full_name
-            full_name: resource.roleable&.full_name
+            full_name: resource.roleable.try(:full_name) || resource.roleable.try(:business_name) || resource.roleable.try(:contact_name) || "Usuario"
           },
           # rol: resource.roleable_id,
           rol: resource.roleable_type
@@ -70,7 +70,7 @@ module Users
           expire_at: Time.current + 1.day
         )
       end
-      # blacklist_token
+      log_activity("Cierre de sesión", nil, current_resource)
       render_success(message: I18n.t('api_guard.authentication.signed_out'))
     end
 
@@ -110,24 +110,24 @@ module Users
     #   render_error(422, message: I18n.t('api_guard.authentication.invalid_login_credentials'))
     # end
     def find_resource
-      if params[:authentication].present? && params[:authentication][:document_number].present? && params[:authentication][:password].present?
-        document_number = params[:authentication][:document_number].downcase.strip
+      if params[:authentication].present? && params[:authentication][:password].present?
         password = params[:authentication][:password]
         
-        puts "Document number: #{document_number}"
-        puts "Password: #{password}"
-    
-        self.resource = User.find_by("document_number = ?", document_number)
+        if params[:authentication][:document_number].present?
+          login_value = params[:authentication][:document_number].downcase.strip
+          self.resource = User.find_by("document_number = ?", login_value)
+        elsif params[:authentication][:email].present?
+          login_value = params[:authentication][:email].downcase.strip
+          self.resource = User.find_by("email = ?", login_value)
+        else
+          puts "Missing email or document_number"
+          return render_error(422, message: I18n.t('api_guard.authentication.invalid_login_credentials'))
+        end
     
         if resource
-          puts "User found: #{resource.inspect}"
-          
           begin
             if resource.authenticate(password)
-              puts "Authentication successful"
               return
-            else
-              puts "Authentication failed"
             end
           rescue BCrypt::Errors::InvalidHash => e
             puts "Invalid password hash: #{e.message}"
@@ -139,6 +139,7 @@ module Users
         puts "Missing parameters"
       end
     
+      log_activity("Intento de inicio de sesión fallido", "Credenciales inválidas para: #{params.dig(:authentication, :email) || params.dig(:authentication, :document_number)}")
       render_error(422, message: I18n.t('api_guard.authentication.invalid_login_credentials'))
     end
     

@@ -14,19 +14,29 @@ development:
   database: erp_cat
   host: localhost
   port: 5432
-  username: <%= ENV["DATA_BASE_USER_NAME"] %>
-  password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
+  username: tefa
+  password: "0203"
 
 test:
   <<: *default
   database: erp_cat_test
   host: localhost
   port: 5432
-  username: <%= ENV["DATA_BASE_USER_NAME"] %>
-  password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
+  # username: <%= ENV["DATA_BASE_USER_NAME"] %>
+  # password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
+  username: tefa
+  password: "0203"
 
 production:
   <<: *default
   database: erp_cat_production
   username: backend
   password: <%= ENV["BACKEND_DATABASE_PASSWORD"] %>
+
+replica:
+  <<: *default
+  database: erp_cat_replica
+  host: localhost
+  port: 5432
+  username: tefa
+  password: "0203"

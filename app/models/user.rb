@@ -1,12 +1,13 @@
 class User < ApplicationRecord
   include Sanitizable
+  has_paper_trail
 
   belongs_to :roleable, polymorphic: true
   before_create :set_default_data
 
   has_many :refresh_tokens, dependent: :delete_all
   has_many :blacklisted_tokens, dependent: :delete_all
-  has_many :password_recoveries, dependent: :delete_all
+  # has_many :password_recoveries, dependent: :delete_all
 
   has_secure_password
   # api_guard_associations refresh_token: 'refresh_tokens', blacklisted_token: 'blacklisted_tokens'
