@@ -10,6 +10,7 @@ module BackErpCat
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    config.active_job.queue_adapter = :sidekiq
 
     # Configurar UUID por defecto para las migraciones
     config.generators do |g|
@@ -26,7 +27,7 @@ module BackErpCat
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    config.time_zone = "Lima"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

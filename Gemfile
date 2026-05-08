@@ -42,6 +42,7 @@ gem "base64", "0.1.1"
 gem 'faraday-retry'
 gem 'lograge'
 gem 'paper_trail'
+gem 'connection_pool', '< 3.0'
 gem 'sidekiq-cron'
 
 

@@ -25,7 +25,7 @@ namespace :db do
       Dir.glob(backup_dir.join('*.sql.gz')).each do |file|
         if File.mtime(file) < 7.days.ago
           File.delete(file)
-          puts "🗑️ Backup antiguo eliminado: #{File.basename(file)}"
+          puts " Backup antiguo eliminado: #{File.basename(file)}"
         end
       end
     else
