@@ -7,7 +7,7 @@ module Users
       create_token_and_set_header(current_resource, resource_name)
       @refresh_token.destroy
       blacklist_token if ApiGuard.blacklist_token_after_refreshing
-      full_name = current_resource.roleable&.full_name
+      full_name = current_resource.roleable.try(:full_name) || current_resource.roleable.try(:business_name) || current_resource.roleable.try(:contact_name) || "Usuario"
       render json: {
         access_token: response.headers['Access-Token'],
         refresh_token: response.headers['Refresh-Token'],

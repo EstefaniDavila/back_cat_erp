@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :general do
         api_guard_routes for: 'users', controller: {
+          registration: 'users/registration',
           authentication: 'users/authentication',
           passwords: 'users/passwords',
           tokens: 'users/tokens'
