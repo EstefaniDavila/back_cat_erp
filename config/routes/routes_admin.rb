@@ -189,6 +189,8 @@ Rails.application.routes.draw do
         # Kardex por repuesto 
         get '/stock_movements/spare_part/:spare_part_id', to: 'stock_movements#by_spare_part'
 
+       # config/routes.rb - Dentro de tu namespace :api, namespace :v1, namespace :admin
+
         ####################### Órdenes de Despacho ##############################
         get    '/dispatch_orders',                   to: 'dispatch_orders#index'
         get    '/dispatch_orders/select',            to: 'dispatch_orders#index_select'
@@ -199,10 +201,10 @@ Rails.application.routes.draw do
         delete '/dispatch_orders/:id',               to: 'dispatch_orders#destroy'
 
         # Acciones especiales
-        put    '/dispatch_orders/:id/dispatch',      to: 'dispatch_orders#dispatch'
-        put    '/dispatch_orders/:id/deliver',       to: 'dispatch_orders#deliver'
-        put    '/dispatch_orders/:id/cancel',        to: 'dispatch_orders#cancel'
-        get    '/dispatch_orders/by_status/:status', to: 'dispatch_orders#by_status'
+        put    '/dispatch_orders/:id/process_dispatch', to: 'dispatch_orders#process_dispatch'  # <-- CAMBIADO
+        put    '/dispatch_orders/:id/deliver',          to: 'dispatch_orders#deliver'
+        put    '/dispatch_orders/:id/cancel',           to: 'dispatch_orders#cancel'
+        get    '/dispatch_orders/by_status/:status',    to: 'dispatch_orders#by_status'
         get    '/dispatch_orders/by_sales_order/:sales_order_id', to: 'dispatch_orders#by_sales_order'
         get    '/dispatch_orders/by_rental/:rental_id', to: 'dispatch_orders#by_rental'
 
@@ -221,6 +223,30 @@ Rails.application.routes.draw do
         # Acciones para marcar/desmarcar items
         patch  '/dispatch_items/:id/check',        to: 'dispatch_items#check'
         patch  '/dispatch_items/:id/uncheck',      to: 'dispatch_items#uncheck'
+
+                ####################### Guías de Envío ##############################
+        get    '/delivery_guides',                   to: 'delivery_guides#index'
+        get    '/delivery_guides/:id',               to: 'delivery_guides#show'
+        get    '/dispatch_orders/:dispatch_order_id/delivery_guide', to: 'delivery_guides#by_dispatch_order'
+        post   '/delivery_guides',                   to: 'delivery_guides#create'
+        put    '/delivery_guides/:id',               to: 'delivery_guides#update'
+        patch  '/delivery_guides/:id',               to: 'delivery_guides#update'
+        delete '/delivery_guides/:id',               to: 'delivery_guides#destroy'
+
+        # Acciones especiales
+        patch  '/delivery_guides/:id/mark_as_issued',   to: 'delivery_guides#mark_as_issued'
+        patch  '/delivery_guides/:id/mark_as_delivered', to: 'delivery_guides#mark_as_delivered'  
+
+        ####################### Incidentes de Envío ##############################
+        get    '/delivery_incidents',                   to: 'delivery_incidents#index'
+        get    '/delivery_incidents/:id',               to: 'delivery_incidents#show'
+        get    '/delivery_incidents/types/list',        to: 'delivery_incidents#incident_types_list'
+        get    '/delivery_incidents/by_type/:incident_type', to: 'delivery_incidents#by_type'
+        get    '/delivery_guides/:delivery_guide_id/incidents', to: 'delivery_incidents#by_delivery_guide'
+        post   '/delivery_incidents',                   to: 'delivery_incidents#create'
+        put    '/delivery_incidents/:id',               to: 'delivery_incidents#update'
+        patch  '/delivery_incidents/:id',               to: 'delivery_incidents#update'
+        delete '/delivery_incidents/:id',               to: 'delivery_incidents#destroy'
 
       end
     end

@@ -4,7 +4,7 @@ module Api
     module Admin
       class DispatchOrdersController < ApplicationController
         protect_from_forgery with: :null_session
-        before_action :set_dispatch_order, only: [:show, :update, :destroy, :dispatch, :deliver, :cancel]
+        before_action :set_dispatch_order, only: [:show, :update, :destroy, :process_dispatch, :deliver, :cancel]
         skip_before_action :verify_authenticity_token
 
         # GET /api/v1/admin/dispatch_orders
@@ -38,7 +38,7 @@ module Api
         # POST /api/v1/admin/dispatch_orders
         def create
           @dispatch_order = DispatchOrder.new(dispatch_order_params)
-          @dispatch_order.prepared_by_id = current_user&.id || User.first&.id
+          #@dispatch_order.prepared_by_id = current_user&.id || User.first&.id
           @dispatch_order.status = 'pending'
           generate_code(@dispatch_order)
 
@@ -68,8 +68,8 @@ module Api
           end
         end
 
-        # PUT /api/v1/admin/dispatch_orders/:id/dispatch
-        def dispatch
+        # PUT /api/v1/admin/dispatch_orders/:id/process_dispatch
+        def process_dispatch
           if @dispatch_order.update(status: 'dispatched', dispatched_at: Time.current)
             render json: @dispatch_order, status: :ok
           else
@@ -122,8 +122,9 @@ module Api
         end
 
         def dispatch_order_params
-          params.require(:dispatch_order).permit(
-            :code, :status, :sales_order_id, :rental_id
+           params.require(:dispatch_order).permit(
+            :code, :status, :sales_order_id, :rental_id, :prepared_by_id,
+            dispatch_items_attributes: [:id, :product_id, :quantity, :checked, :_destroy]  # <--- AGREGAR ESTA LÍNEA
           )
         end
 

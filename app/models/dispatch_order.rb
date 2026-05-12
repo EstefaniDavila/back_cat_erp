@@ -8,6 +8,8 @@ class DispatchOrder < ApplicationRecord
   has_many :dispatch_items, dependent: :destroy
   has_one :delivery_guide, dependent: :destroy
 
+  accepts_nested_attributes_for :dispatch_items, allow_destroy: true
+
   validates :code, uniqueness: true, allow_nil: true
   validates :status, presence: true, inclusion: { in: %w[pending dispatched delivered cancelled] }
 
