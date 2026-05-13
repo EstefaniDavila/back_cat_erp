@@ -51,6 +51,11 @@ Rails.application.routes.draw do
         patch  '/vehicles/:id',               to: 'vehicles#update'
         delete '/vehicles/:id',               to: 'vehicles#destroy'
 
+        patch  '/vehicles/:id/disable',       to: 'vehicles#disable'
+        patch  '/vehicles/:id/enable',        to: 'vehicles#enable'
+        patch  '/vehicles/:id/maintenance',   to: 'vehicles#maintenance'
+        patch  '/vehicles/:id/make_available',to: 'vehicles#make_available'
+
         ####################### Gestión de Inventario===PRODUCTOS################################
 
         get    '/products',                   to: 'products#index'
@@ -188,8 +193,6 @@ Rails.application.routes.draw do
 
         # Kardex por repuesto 
         get '/stock_movements/spare_part/:spare_part_id', to: 'stock_movements#by_spare_part'
-
-       # config/routes.rb - Dentro de tu namespace :api, namespace :v1, namespace :admin
 
         ####################### Órdenes de Despacho ##############################
         get    '/dispatch_orders',                   to: 'dispatch_orders#index'

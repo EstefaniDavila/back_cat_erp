@@ -11,7 +11,6 @@ class SparePart < ApplicationRecord
 
   # Método para recalcular stock
   def calculated_stock
-    stock_movements.where(movement_type: "IN").sum(:quantity) -
-    stock_movements.where(movement_type: "OUT").sum(:quantity)
+    stock
   end
 end
