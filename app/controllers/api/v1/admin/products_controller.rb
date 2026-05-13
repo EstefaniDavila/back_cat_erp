@@ -47,7 +47,7 @@ module Api
         
         # PATCH/PUT /api/v1/admin/products/:id
         def update
-          @product.updated_by_id = current_user&.id
+          #@product.updated_by_id = current_user&.id
           
           if @product.update(product_params)
             render json: @product

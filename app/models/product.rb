@@ -8,7 +8,7 @@ class Product < ApplicationRecord
   # Associations
   has_one :vehicle, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
   has_one :spare_part, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
-  has_one :spare_part
+  #has_one :spare_part
 
   accepts_nested_attributes_for :vehicle, allow_destroy: true
   accepts_nested_attributes_for :spare_part, allow_destroy: true
@@ -34,8 +34,10 @@ class Product < ApplicationRecord
   #validate :validate_type_specific_attributes
   
   # Callbacks
+  before_validation :set_default_code, on: :create
   after_validation :normalize_code
   after_update :sync_type_specific_status
+  after_create :create_type_specific_record
 
   # Scopes
   scope :active, -> { where(active: true) }
@@ -78,6 +80,16 @@ class Product < ApplicationRecord
   end
   
   private
+
+   def set_default_code
+    return if code.present?
+    
+    self.code = if vehicle?
+      "VEH-#{SecureRandom.hex(4).upcase}"
+    else
+      "REP-#{SecureRandom.hex(4).upcase}"
+    end
+  end
   
   def normalize_code
     self.code = code.upcase.strip if code.present?
@@ -101,8 +113,9 @@ end
   
   
   def sync_type_specific_status
-    if saved_change_to_active? && specific.present?
-      specific.update_column(:status, active ? 'active' : 'inactive')
+    if saved_change_to_active? && specific.present? && vehicle?
+      new_status = active ? 'available' : 'disabled'
+      specific.update_column(:status, new_status)
     end
-  end
+  end  
 end

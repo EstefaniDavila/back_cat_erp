@@ -13,18 +13,19 @@ class Vehicle < ApplicationRecord
     disabled: 'disabled',     
     maintenance: 'maintenance',
     sold: 'sold',             
-    rented: 'rented'          
+    rented: 'rented',
+    logistic: 'logistic'           
   }.freeze
 
   validates :status, inclusion: { in: STATUSES.values }, allow_nil: true
-
 
   scope :available, -> { where(status: STATUSES[:available]) }
   scope :visible, -> { where(status: STATUSES[:available]) }  
   scope :for_sale, -> { where(status: STATUSES[:available]) }
   scope :for_rent, -> { where(status: STATUSES[:available]) }
+  scope :commercial, -> { where(status: [STATUSES[:available], STATUSES[:rented]]) }
+  scope :delivery_vehicles, -> { where(status: STATUSES[:logistic]) }
 
-  # Métodos para preguntar estado
   def available?
     status == STATUSES[:available]
   end
@@ -45,7 +46,10 @@ class Vehicle < ApplicationRecord
     status == STATUSES[:rented]
   end
 
-  # Métodos para cambiar estado
+  def logistic?
+    status == STATUSES[:logistic]
+  end
+
   def mark_as_available!
     update(status: STATUSES[:available])
   end
@@ -68,5 +72,9 @@ class Vehicle < ApplicationRecord
 
   def mark_as_returned!
     update(status: STATUSES[:available]) if rented?
+  end
+
+  def mark_as_logistic!
+    update(status: STATUSES[:logistic])
   end
 end
