@@ -7,8 +7,6 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
@@ -16,26 +14,29 @@ development:
   database: erp_cat
   host: localhost
   port: 5432
-  username: <%= ENV["DATA_BASE_USER_NAME"] %>
-  password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
-  # username: tefa
-  # password: "0203"
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
+  username: egusquiza31
+  password: "123456"
+
 test:
   <<: *default
   database: erp_cat_test
   host: localhost
   port: 5432
-  username: <%= ENV["DATA_BASE_USER_NAME"] %>
-  password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
-  # username: tefa
-  # password: "0203"
-
+  # username: <%= ENV["DATA_BASE_USER_NAME"] %>
+  # password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
+  username: tefa
+  password: "0203"
 
 production:
   <<: *default
   database: erp_cat_production
   username: backend
   password: <%= ENV["BACKEND_DATABASE_PASSWORD"] %>
+
+replica:
+  <<: *default
+  database: erp_cat_replica
+  host: localhost
+  port: 5432
+  username: tefa
+  password: "0203"
