@@ -47,7 +47,7 @@ module Api
         
         # PATCH/PUT /api/v1/admin/products/:id
         def update
-          @product.updated_by_id = current_user&.id
+          #@product.updated_by_id = current_user&.id
           
           if @product.update(product_params)
             render json: @product
@@ -114,14 +114,25 @@ module Api
         
 
         def filtered_products
-          products = Product.all
-          
+  products = Product.includes(
+    vehicle: { vehicle_model: :vehicle_type },
+    spare_part: :spare_part_category
+  )
+
+  if params[:vehicle_type_id].present?
+    products = products
+      .joins(vehicle: :vehicle_model)
+      .where(vehicle_models: { vehicle_type_id: params[:vehicle_type_id] })
+  end
+
           # Filtros
           products = products.where(product_type: params[:type]) if params[:type].present?
           products = products.where(active: true) if params[:active] == 'true'
           products = products.where(active: false) if params[:inactive] == 'true'
           products = products.where(code: params[:code]) if params[:code].present?
           products = products.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
+          products = products.where('base_price >= ?', params[:min_price]) if params[:min_price].present?
+          products = products.where('base_price <= ?', params[:max_price]) if params[:max_price].present?
           
           # Rango de precios
           if params[:min_price].present?
@@ -135,8 +146,9 @@ module Api
           products
         end
         
+        # app/controllers/api/v1/admin/products_controller.rb
         def product_json(product)
-          {
+          json = {
             id: product.id,
             code: product.code,
             name: product.name,
@@ -147,7 +159,38 @@ module Api
             created_at: product.created_at,
             updated_at: product.updated_at
           }
+
+          if product.vehicle?
+            json[:vehicle] = {
+              serial: product.vehicle&.serial,
+              manufacture_year: product.vehicle&.manufacture_year,
+              hours_used: product.vehicle&.hours_used,
+              status: product.vehicle&.status,
+              price_per_hour: product.vehicle&.price_per_hour&.to_f,
+              price_per_day: product.vehicle&.price_per_day&.to_f,
+              location: product.vehicle&.location,
+              vehicle_model_id: product.vehicle&.vehicle_model_id,
+              vehicle_model: product.vehicle&.vehicle_model&.model,
+              vehicle_brand: product.vehicle&.vehicle_model&.brand,
+              vehicle_type_id: product.vehicle&.vehicle_model&.vehicle_type_id,
+              vehicle_type: product.vehicle&.vehicle_model&.vehicle_type&.name
+            }
+          elsif product.spare_part?
+            json[:spare_part] = {
+              part_number: product.spare_part&.part_number,
+              manufacturer_brand: product.spare_part&.manufacturer_brand,
+              stock: product.spare_part&.stock || 0,
+              min_stock: product.spare_part&.min_stock || 5,
+              sale_unit: product.spare_part&.sale_unit,
+              is_critical: product.spare_part&.is_critical,
+              category: product.spare_part&.spare_part_category&.name
+            }
+          end
+
+          json
         end
+
+        
         
         def product_params
           params.require(:product).permit(

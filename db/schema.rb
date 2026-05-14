@@ -73,8 +73,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
 
   create_table "blacklisted_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "token"
-    t.uuid "user_id", null: false
     t.datetime "expire_at"
+    t.uuid "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_blacklisted_tokens_on_user_id"

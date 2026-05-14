@@ -3,10 +3,9 @@ module Api
   module V1
     module Admin
       class VehiclesController < ApplicationController
-        #before_action :set_vehicle, only: [:show, :update, :destroy]
+        protect_from_forgery with: :null_session
         
-        # Deshabilita CSRF para este controlador
-        protect_from_forgery with: :null_session, only: [:create, :update, :destroy]
+        before_action :set_vehicle, only: [:show, :update, :destroy, :disable, :enable, :maintenance, :make_available]
 
         # GET /api/v1/admin/vehicles
         def index
@@ -61,7 +60,31 @@ module Api
             head :no_content
           end
         end
-        
+
+        # PATCH /api/v1/admin/vehicles/:id/disable
+        def disable
+          @vehicle.mark_as_disabled!
+          render json: { success: true, vehicle: vehicle_json(@vehicle) }
+        end
+
+        # PATCH /api/v1/admin/vehicles/:id/enable
+        def enable
+          @vehicle.mark_as_available!
+          render json: { success: true, vehicle: vehicle_json(@vehicle) }
+        end
+
+        # PATCH /api/v1/admin/vehicles/:id/maintenance
+        def maintenance
+          @vehicle.mark_as_maintenance!
+          render json: { success: true, vehicle: vehicle_json(@vehicle) }
+        end
+
+        # PATCH /api/v1/admin/vehicles/:id/make_available
+        def make_available
+          @vehicle.mark_as_available!
+          render json: { success: true, vehicle: vehicle_json(@vehicle) }
+        end
+
         private
         
         def set_vehicle

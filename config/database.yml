@@ -14,8 +14,8 @@ development:
   database: erp_cat
   host: localhost
   port: 5432
-  username: tefa
-  password: "0203"
+  username: egusquiza31
+  password: "123456"
 
 test:
   <<: *default

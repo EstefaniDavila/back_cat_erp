@@ -15,6 +15,8 @@ class PurchaseOrder < ApplicationRecord
   before_validation :generate_code, on: :create
   after_save :recalculate_total  
 
+  after_update :register_stock_movements, if: :just_received?
+
   enum status: {
     draft: 'draft',
     sent: 'sent',
@@ -23,15 +25,40 @@ class PurchaseOrder < ApplicationRecord
     cancelled: 'cancelled'
   }
 
+  
+
   def draft?
     status == 'draft'
   end
-
+  
   def receive!
-    update!(status: 'completed', received_at: Time.current)
+  update!(status: 'completed', received_at: Time.current)
+  end
+  def just_received?
+    saved_change_to_status? && status == "completed"
   end
 
   private
+
+   def register_stock_movements
+    purchase_order_items.each do |item|
+      spare_part = item.spare_part
+
+      next unless spare_part # evita errores si no existe
+
+      # 🔹 Crear movimiento
+      StockMovement.create!(
+        movement_type: "IN",
+        quantity: item.quantity,
+        reference: self.code,
+        spare_part: spare_part,
+        performed_by: requested_by
+      )
+
+      # 🔹 Actualizar stock físico
+      spare_part.increment!(:stock, item.quantity)
+    end
+  end
 
   def generate_code
     return if code.present?
