@@ -25,7 +25,20 @@ module Api
         # GET /api/v1/admin/suppliers/:supplier_id/supplier_products
         def index_by_supplier
           @supplier_products = SupplierProduct.includes(:product).where(supplier_id: params[:supplier_id])
-          render json: @supplier_products, status: :ok
+          
+          render json: @supplier_products.map { |sp|
+            {
+              id: sp.id,
+              supplier_code: sp.supplier_code,
+              unit_cost: sp.unit_cost.to_f,
+              lead_time_days: sp.lead_time_days,
+              product: {
+                id: sp.product.id,
+                code: sp.product.code,
+                name: sp.product.name
+              }
+            }
+          }, status: :ok
         end
 
         # GET /api/v1/admin/products/:product_id/supplier_products
