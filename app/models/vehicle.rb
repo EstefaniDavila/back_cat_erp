@@ -77,4 +77,17 @@ class Vehicle < ApplicationRecord
   def mark_as_logistic!
     update(status: STATUSES[:logistic])
   end
+
+   after_save :sync_product_active_status
+   
+   def sync_product_active_status
+    return unless product.present?
+    
+    active_status = status.in?(%w[available logistic])
+    
+    if product.active != active_status
+      product.update_column(:active, active_status)
+    end
+  end
+
 end
