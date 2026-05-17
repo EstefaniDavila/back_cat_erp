@@ -9,7 +9,7 @@ class Api::V1::Admin::QuotationsController < ApplicationController
     fields = params[:search_fields]&.split(",") || []
     
     # El Admin ve todas las cotizaciones
-    quotations = Quotation.includes(:client, :advisor)
+    quotations = Quotation.includes(:client, :advisor, :quotation_items)
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields2(fields, keywords, "text")
@@ -39,9 +39,13 @@ class Api::V1::Admin::QuotationsController < ApplicationController
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
+        customer: quo.client.business_name, # Frontend espera 'customer' en lugar de 'client_name'
+        advisor: advisor_name, # Frontend espera 'advisor' 
         advisor_name: advisor_name,
+        items: quo.quotation_items.map { |i| { id: i.id, description: i.description, quantity: i.quantity, unit_price: i.unit_price, total_price: i.total_price, item_type: i.item_type } },
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
-        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
+        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M"),
+        date: quo.created_at.strftime("%d/%m/%Y")
       }
     end
 

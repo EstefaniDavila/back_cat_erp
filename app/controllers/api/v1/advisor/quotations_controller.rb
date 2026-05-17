@@ -36,6 +36,7 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
+        customer: quo.client.business_name,
         lead_description: quo.lead&.notes,
         has_completed_area_request: quo.area_requests.where(status: 'completed').exists?,
         pending_area_request: quo.area_requests.where(status: 'pending').exists?,
@@ -51,7 +52,8 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
           }
         },
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
-        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
+        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M"),
+        date: quo.created_at.strftime("%d/%m/%Y")
       }
     end
 
