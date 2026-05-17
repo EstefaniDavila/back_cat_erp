@@ -35,7 +35,7 @@ module Api
          
 
           if @product.save
-            render json: @product, status: :ok
+            render json: product_json(@product), status: :ok
           else
             render json: {
           error: "No se pudo crear el producto",
@@ -50,7 +50,7 @@ module Api
           #@product.updated_by_id = current_user&.id
           
           if @product.update(product_params)
-            render json: @product
+            render json: product_json(@product)
           else
             render json: { errors: @product.errors.full_messages }, status: :unprocessable_entity
           end
@@ -157,7 +157,8 @@ module Api
             base_price: product.base_price.to_f,
             active: product.active,
             created_at: product.created_at,
-            updated_at: product.updated_at
+            updated_at: product.updated_at,
+            product_images: product.product_images.as_json(only: [:id, :url])
           }
 
           if product.vehicle?
@@ -202,7 +203,9 @@ module Api
             spare_part_attributes: [
               :spare_part_category_id, :part_number, :manufacturer_brand, :stock,
               :min_stock, :sale_unit, :is_critical
-            ]
+            ],
+
+            product_images_attributes: [:id, :url, :_destroy]
           )
         end
       end

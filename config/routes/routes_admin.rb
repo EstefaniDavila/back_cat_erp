@@ -270,6 +270,16 @@ Rails.application.routes.draw do
         patch  '/warehousemen/:id',               to: 'warehousemen#update'
         delete '/warehousemen/:id',               to: 'warehousemen#destroy'
 
+
+        # Imagenes
+        get '/product_images', to: 'product_images#index'
+        get '/product_images/:id', to: 'product_images#show'
+        post '/product_images', to: 'product_images#create'
+        put '/product_images/:id', to: 'product_images#update'
+        patch '/product_images/:id', to: 'product_images#update'
+        delete '/product_images/:id', to: 'product_images#destroy'
+        get '/products/:product_id/images', to: 'product_images#by_product'
+
       end
     end
   end

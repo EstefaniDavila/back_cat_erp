@@ -6,17 +6,18 @@ class Product < ApplicationRecord
   }
   
   # Associations
+  has_many :product_images, dependent: :destroy
   has_one :vehicle, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
   has_one :spare_part, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
   #has_one :spare_part
 
   accepts_nested_attributes_for :vehicle, allow_destroy: true
   accepts_nested_attributes_for :spare_part, allow_destroy: true
-  
+  accepts_nested_attributes_for :product_images, allow_destroy: true
+
   belongs_to :created_by, class_name: 'User'
   belongs_to :updated_by, class_name: 'User', optional: true
   
-  has_many :product_images, dependent: :destroy
   has_many :quotation_items, dependent: :restrict_with_error
   has_many :work_order_parts, dependent: :restrict_with_error
   has_many :dispatch_items, dependent: :restrict_with_error
