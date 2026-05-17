@@ -3,7 +3,7 @@ class Maintenance < ApplicationRecord
 
   belongs_to :client
   belongs_to :customer_asset, optional: true
-  belongs_to :vehicle, optional: true
+  belongs_to :enterprise_vehicle, class_name: 'Vehicle', optional: true
   belongs_to :quotation, optional: true
   has_many :work_orders, dependent: :destroy
   has_many :maintenance_reports, dependent: :destroy

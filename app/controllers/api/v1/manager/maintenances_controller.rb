@@ -21,7 +21,16 @@ class Api::V1::Manager::MaintenancesController < ApplicationController
     maintenances = maintenances.page(params[:page]).per(params[:per_page])
 
     render json: {
-      maintenances: maintenances.as_json(),
+      maintenances: maintenances.as_json(
+        include: {
+          client: {
+            only: [:id, :business_name]
+          },
+          enterprise_vehicle: {
+            only: [:id, :serial]
+          }
+        }
+      ),
       current_page: maintenances.current_page,
       total_pages: maintenances.total_pages,
       per_page: maintenances.limit_value,
