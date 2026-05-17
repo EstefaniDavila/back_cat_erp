@@ -106,8 +106,9 @@ class Api::V1::Manager::QuotationsController < ApplicationController
   def final_approve
     quo = Quotation.find(params[:id])
 
-    unless quo.status == 'client_approved' || quo.status == 'pending_approval'
-      return render json: { message: "Esta cotización no está lista para aprobación final (status actual: #{quo.status})" }, status: :unprocessable_entity
+    actionable_statuses = %w[client_approved pending_approval approved_internally sent]
+    unless actionable_statuses.include?(quo.status)
+      return render json: { message: "Esta cotización no está lista para aprobación final (estado actual: #{quo.status})" }, status: :unprocessable_entity
     end
 
     ActiveRecord::Base.transaction do
@@ -125,21 +126,20 @@ class Api::V1::Manager::QuotationsController < ApplicationController
           client_id:    quo.client_id,
           advisor_id:   quo.advisor_id
         )
-        { model: 'SalesOrder', code: order.code, area: 'Logística', record: order }
+        { model: 'SalesOrder', code: order.code, area: 'logistics', area_label: 'Logística', record: order }
 
       when 'rental'
         # → Operaciones (Alquiler)
+        # vehicle_id se asigna en Logística/Operaciones cuando procesan la orden de despacho
         rental = Rental.create!(
           code:         "RNT-#{SecureRandom.hex(3).upcase}",
           status:       'pending',
           total:        quo.total,
-          notes:        "Alquiler generado tras aprobación final del Gerente.",
+          notes:        "Alquiler generado tras aprobación final del Gerente. Vehículo/equipo por asignar en Logística.",
           quotation_id: quo.id,
-          client_id:    quo.client_id,
-          vehicle_id:   quo.quotation_items.where(item_type: ['rental', 'product']).first&.product_id ||
-                        quo.quotation_items.first&.product_id
+          client_id:    quo.client_id
         )
-        { model: 'Rental', code: rental.code, area: 'Operaciones', record: rental }
+        { model: 'Rental', code: rental.code, area: 'operations', area_label: 'Operaciones', record: rental }
 
       when 'maintenance'
         # → Operaciones (Mantenimiento)
@@ -153,7 +153,7 @@ class Api::V1::Manager::QuotationsController < ApplicationController
           client_id:        quo.client_id,
           quotation_id:     quo.id
         )
-        { model: 'Maintenance', code: maint.code, area: 'Operaciones', record: maint }
+        { model: 'Maintenance', code: maint.code, area: 'operations', area_label: 'Operaciones', record: maint }
 
       else
         order = SalesOrder.create!(
@@ -165,13 +165,41 @@ class Api::V1::Manager::QuotationsController < ApplicationController
           client_id:    quo.client_id,
           advisor_id:   quo.advisor_id
         )
-        { model: 'SalesOrder', code: order.code, area: 'Logística', record: order }
+        { model: 'SalesOrder', code: order.code, area: 'logistics', area_label: 'Logística', record: order }
       end
 
+      # Determinar nombre y descripción de la solicitud de área según el tipo
+      area_request_name = case quo.quotation_type
+      when 'rental'
+        "Preparar Alquiler - #{quo.client&.business_name || quo.client&.contact_name} [#{order_info[:code]}]"
+      when 'maintenance'
+        "Ejecutar Mantenimiento - #{quo.client&.business_name || quo.client&.contact_name} [#{order_info[:code]}]"
+      else
+        "Despacho de Orden - #{quo.client&.business_name || quo.client&.contact_name} [#{order_info[:code]}]"
+      end
+
+      area_request_description = [
+        "Solicitud generada automáticamente al aprobar definitivamente la cotización #{quo.code}.",
+        "Cliente: #{quo.client&.business_name || quo.client&.contact_name}",
+        "Tipo de operación: #{quo.quotation_type&.upcase}",
+        "Monto total: S/ #{quo.total&.to_f&.round(2)}",
+        quo.lead&.notes.present? ? "\nDetalles del cliente:\n#{quo.lead.notes}" : nil
+      ].compact.join("\n")
+
+      # Crear el AreaRequest para la respectiva área
+      AreaRequest.create!(
+        area:           order_info[:area_label] || order_info[:area],
+        name:           area_request_name,
+        description:    area_request_description,
+        status:         'pending',
+        quotation_id:   quo.id,
+        created_by_id:  quo.advisor_id   # El asesor de la cotización queda como responsable
+      )
+
       render json: {
-        message: "Cotización aprobada definitivamente. #{order_info[:model]} #{order_info[:code]} creado y asignado a #{order_info[:area]}.",
+        message: "Cotización aprobada definitivamente. #{order_info[:model]} #{order_info[:code]} creado y solicitud enviada a #{order_info[:area_label] || order_info[:area]}.",
         quotation: quo,
-        generated_order: { type: order_info[:model], code: order_info[:code], area: order_info[:area] }
+        generated_order: { type: order_info[:model], code: order_info[:code], area: order_info[:area_label] || order_info[:area] }
       }, status: :ok
     end
   rescue ActiveRecord::RecordInvalid => e

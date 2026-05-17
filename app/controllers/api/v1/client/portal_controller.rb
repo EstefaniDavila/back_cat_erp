@@ -9,19 +9,29 @@ class Api::V1::Client::PortalController < ApplicationController
     client_id_param = params[:client_id]
     current_client_id = (client_id_param.blank? || client_id_param == "undefined" || client_id_param == "1") ? nil : client_id_param
 
-    quotations = current_client_id ? Quotation.where(client_id: current_client_id).includes(:quotation_items).order(created_at: :desc) : Quotation.none
-    leads_without_quotation = current_client_id ? Lead.left_outer_joins(:quotations).where(client_id: current_client_id, quotations: { id: nil }).order(created_at: :desc) : Lead.none
+    # Solo cotizaciones que ya fueron enviadas al cliente o más avanzadas (no borradores)
+    quotations = current_client_id ? Quotation.where(client_id: current_client_id).where.not(status: 'draft').includes(:quotation_items).order(created_at: :desc) : Quotation.none
+    
+    # Leads sin cotización, o cuya cotización aún es borrador (no ha sido enviada al cliente)
+    leads_without_quotation = if current_client_id
+      Lead.left_outer_joins(:quotations)
+          .where(client_id: current_client_id)
+          .where("quotations.id IS NULL OR quotations.status = ?", "draft")
+          .distinct
+          .order(created_at: :desc)
+    else
+      Lead.none
+    end
 
     mapped_requests = []
 
     quotations.each do |quo|
-      status_to_show = quo.status == 'draft' ? 'en_revision' : quo.status
       mapped_requests << {
         id: quo.id,
         lead_id: quo.lead_id,
         code: quo.code || (quo.lead&.code),
         quotation_type: quo.quotation_type || (quo.lead&.lead_type),
-        status: status_to_show,
+        status: quo.status,
         total: quo.total || 0.0,
         items: quo.quotation_items,
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
@@ -29,14 +39,18 @@ class Api::V1::Client::PortalController < ApplicationController
       }
     end
 
-    # Mapear los leads sin cotización
+    # Mapear los leads sin cotización o con cotización borrador como "en_revision" o "pendiente"
     leads_without_quotation.each do |lead|
+      # Si el lead ya tiene una cotización pero es draft, el cliente lo ve como "en_revision" (técnica)
+      has_draft = lead.quotations.exists?(status: 'draft')
+      status_to_show = has_draft ? 'en_revision' : ((lead.status == 'new' || lead.status == 'assigned') ? 'pendiente' : lead.status)
+      
       mapped_requests << {
         id: lead.id, # Usamos el ID del lead para que React no falle
         lead_id: lead.id,
         code: lead.code,
         quotation_type: lead.lead_type,
-        status: (lead.status == 'new' || lead.status == 'assigned') ? 'pendiente' : lead.status,
+        status: status_to_show,
         total: 0.0,
         items: [{ description: lead.notes || "Solicitud Inicial", quantity: 1, item_type: lead.lead_type }],
         created_at: lead.created_at.strftime("%d/%m/%Y %H:%M"),

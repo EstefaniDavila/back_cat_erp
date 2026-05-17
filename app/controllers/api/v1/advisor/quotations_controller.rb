@@ -123,9 +123,16 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     end
   end
 
-  # El asesor envía a revisión del manager (después que el cliente aprobó)
+  # El asesor envía a revisión del manager (después que el cliente aprobó o lo tiene enviado)
   def send_for_approval
     quotation = Quotation.find(params[:id])
+
+    # Solo bloquear si está en borrador — debe estar al menos enviada al cliente
+    if quotation.status == 'draft'
+      return render json: {
+        message: "⚠️ La cotización aún es un borrador. Primero envíala al cliente con 'Enviar al Cliente'."
+      }, status: :unprocessable_entity
+    end
 
     if (quotation.quotation_type == 'rental' || quotation.quotation_type == 'maintenance') &&
        !quotation.area_requests.where(status: 'completed').exists?
@@ -137,6 +144,18 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
       render json: { message: "Enviado a revisión del Gerente", quotation: quotation }, status: :ok
     else
       render json: { message: "Error al enviar", errors: quotation.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # PUT /api/v1/advisor/quotations/:id/reset_to_sent
+  # Reenviar al cliente si la cotización se adelantó sin aprobación del cliente
+  def reset_to_sent
+    quotation = Quotation.find(params[:id])
+
+    if quotation.update(status: 'sent')
+      render json: { message: "✅ Cotización enviada al cliente nuevamente. Ahora el cliente puede aprobarla o rechazarla.", quotation: quotation }, status: :ok
+    else
+      render json: { message: "Error al reenviar", errors: quotation.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
