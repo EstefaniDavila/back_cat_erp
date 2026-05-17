@@ -1,0 +1,111 @@
+<div class="header">
+  <div class="company-details">
+    <strong>CAT ERP SOLUTIONS</strong><br>
+    Zona Industrial Norte, Lima<br>
+    +51 (01) 234 5678<br>
+    ventas@catmachinery.pe
+  </div>
+  <div class="logo">
+    CAT<span>ERP</span>
+  </div>
+</div>
+
+<div class="title-area">
+  <h1><%= @quotation ? 'Cotización Oficial' : 'Solicitud de Cliente' %> <%= @doc_code %></h1>
+  <p style="margin: 0; color: #666;">
+    Fecha de emisión: <%= (@quotation || @lead).created_at.strftime("%d de %B de %Y") %><br>
+    <% if @quotation %>
+      Válido hasta: <%= (@quotation.valid_until || (@quotation.created_at + 15.days)).strftime("%d de %B de %Y") %>
+    <% else %>
+      Estado: Pendiente de Atención
+    <% end %>
+  </p>
+</div>
+
+<table class="info-table">
+  <tr>
+    <td style="padding-right: 10px;">
+      <div class="info-box">
+        <strong>Preparado para:</strong>
+        <%= @client&.business_name || @client&.contact_name || 'Cliente' %><br>
+        <%= @client&.document_number %><br>
+        <%= @client&.email %><br>
+        <%= @client&.phone %>
+      </div>
+    </td>
+    <td style="padding-left: 10px;">
+      <div class="info-box">
+        <strong>Asesor Comercial:</strong>
+        <%= @quotation&.advisor&.full_name || 'Atención en Línea' %><br>
+        <%= @quotation&.advisor&.email || 'soporte@catmachinery.pe' %><br>
+        <br>
+        <strong>Tipo de Operación:</strong> 
+        <span style="text-transform: uppercase;"><%= @doc_type %></span>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<% if @notes.present? %>
+  <div style="margin-bottom: 20px; padding: 15px; background: #fff8e1; border: 1px solid #FFCD11; border-radius: 5px;">
+    <strong>Notas de la Solicitud:</strong><br>
+    <div style="white-space: pre-wrap; font-size: 12px; margin-top: 5px;"><%= @notes %></div>
+  </div>
+<% end %>
+
+<table class="items">
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th style="width: 15%;">Tipo</th>
+      <th style="width: 10%; text-align: center;">Cant.</th>
+      <th class="right" style="width: 20%;">P. Unit.</th>
+      <th class="right" style="width: 20%;">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @items.present? %>
+      <% @items.each do |item| %>
+        <tr>
+          <td>
+            <strong><%= item.product&.name || item.description %></strong><br>
+            <% if item.product&.code.present? %><span style="font-size: 10px; color: #999;">Cód: <%= item.product.code %></span><% end %>
+          </td>
+          <td style="text-transform: uppercase; font-size: 10px;"><%= item.item_type || 'N/A' %></td>
+          <td style="text-align: center;"><%= item.quantity %></td>
+          <td class="right"><%= number_to_currency(item.unit_price || 0, precision: 2, unit: "S/ ", separator: ".", delimiter: ",") %></td>
+          <td class="right"><%= number_to_currency(item.total_price || 0, precision: 2, unit: "S/ ", separator: ".", delimiter: ",") %></td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="5" style="text-align: center; font-style: italic; color: #999;">Esta solicitud está siendo analizada por el área técnica. El detalle y los precios se generarán pronto.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if @quotation %>
+<div class="totals">
+  <table>
+    <tr>
+      <td>Subtotal:</td>
+      <td class="right"><%= number_to_currency(@quotation.subtotal || 0, precision: 2, unit: "S/ ", separator: ".", delimiter: ",") %></td>
+    </tr>
+    <tr>
+      <td>Impuestos (18%):</td>
+      <td class="right"><%= number_to_currency(@quotation.tax || 0, precision: 2, unit: "S/ ", separator: ".", delimiter: ",") %></td>
+    </tr>
+    <tr>
+      <td class="grand-total">Total General:</td>
+      <td class="right grand-total"><%= number_to_currency(@quotation.total || 0, precision: 2, unit: "S/ ", separator: ".", delimiter: ",") %></td>
+    </tr>
+  </table>
+</div>
+<% end %>
+<div class="clear"></div>
+
+<div class="footer">
+  Este documento es un comprobante de solicitud / cotización generado por CAT ERP Solutions.<br>
+  Cualquier alteración anula la validez del presente documento.
+</div>

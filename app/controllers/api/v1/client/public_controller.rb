@@ -4,8 +4,11 @@ class Api::V1::Client::PublicController < ApplicationController
   
   def request_quote
     ActiveRecord::Base.transaction do
-      # 1. Buscar si el cliente ya existe por email o documento
-      client = Client.find_by(email: params[:email]) || Client.find_by(document_number: params[:document_number])
+      # 1. Buscar si el cliente ya existe por ID, email o documento
+      client = nil
+      client = Client.find_by(id: params[:client_id]) if params[:client_id].present?
+      client ||= Client.find_by(email: params[:email])
+      client ||= Client.find_by(document_number: params[:document_number]) if params[:document_number].present?
       is_new_client = false
 
       if client.nil?

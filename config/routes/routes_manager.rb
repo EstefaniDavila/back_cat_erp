@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         get '/quotations',                                    to: 'quotations#index'
         get '/quotations/:code',                              to: 'quotations#show'
         put '/quotations/:id/approve',                        to: 'quotations#approve'
+        put '/quotations/:id/final_approve',                   to: 'quotations#final_approve'
         put '/quotations/:id/reject',                         to: 'quotations#reject'
         put '/quotations/:id/client_accept',                  to: 'quotations#client_accept'
         put '/quotations/:id',                                to: 'quotations#update'

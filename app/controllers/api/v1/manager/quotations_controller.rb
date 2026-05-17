@@ -101,6 +101,83 @@ class Api::V1::Manager::QuotationsController < ApplicationController
     end
   end
 
+  # PUT /api/v1/manager/quotations/:id/final_approve
+  # El gerente aprueba con el visto bueno del cliente → se crea la orden operativa
+  def final_approve
+    quo = Quotation.find(params[:id])
+
+    unless quo.status == 'client_approved' || quo.status == 'pending_approval'
+      return render json: { message: "Esta cotización no está lista para aprobación final (status actual: #{quo.status})" }, status: :unprocessable_entity
+    end
+
+    ActiveRecord::Base.transaction do
+      quo.update!(status: 'approved', approved_at: Time.current)
+
+      order_info = case quo.quotation_type
+      when 'sale', 'spare_parts', 'contact'
+        # → Logística (Orden de Venta / Despacho)
+        order = SalesOrder.create!(
+          code:         "ORD-#{SecureRandom.hex(3).upcase}",
+          status:       'pending_dispatch',
+          total:        quo.total,
+          notes:        "Orden generada tras aprobación final del Gerente. Tipo: #{quo.quotation_type}.",
+          quotation_id: quo.id,
+          client_id:    quo.client_id,
+          advisor_id:   quo.advisor_id
+        )
+        { model: 'SalesOrder', code: order.code, area: 'Logística', record: order }
+
+      when 'rental'
+        # → Operaciones (Alquiler)
+        rental = Rental.create!(
+          code:         "RNT-#{SecureRandom.hex(3).upcase}",
+          status:       'pending',
+          total:        quo.total,
+          notes:        "Alquiler generado tras aprobación final del Gerente.",
+          quotation_id: quo.id,
+          client_id:    quo.client_id,
+          vehicle_id:   quo.quotation_items.where(item_type: ['rental', 'product']).first&.product_id ||
+                        quo.quotation_items.first&.product_id
+        )
+        { model: 'Rental', code: rental.code, area: 'Operaciones', record: rental }
+
+      when 'maintenance'
+        # → Operaciones (Mantenimiento)
+        maint = Maintenance.create!(
+          code:             "MNT-#{SecureRandom.hex(3).upcase}",
+          status:           'pending',
+          maintenance_type: 'corrective',
+          priority:         'normal',
+          description:      quo.lead&.notes || "Mantenimiento solicitado por el cliente.",
+          requested_at:     Time.current,
+          client_id:        quo.client_id,
+          quotation_id:     quo.id
+        )
+        { model: 'Maintenance', code: maint.code, area: 'Operaciones', record: maint }
+
+      else
+        order = SalesOrder.create!(
+          code:         "ORD-#{SecureRandom.hex(3).upcase}",
+          status:       'pending_dispatch',
+          total:        quo.total,
+          notes:        "Orden generada (tipo: #{quo.quotation_type}).",
+          quotation_id: quo.id,
+          client_id:    quo.client_id,
+          advisor_id:   quo.advisor_id
+        )
+        { model: 'SalesOrder', code: order.code, area: 'Logística', record: order }
+      end
+
+      render json: {
+        message: "Cotización aprobada definitivamente. #{order_info[:model]} #{order_info[:code]} creado y asignado a #{order_info[:area]}.",
+        quotation: quo,
+        generated_order: { type: order_info[:model], code: order_info[:code], area: order_info[:area] }
+      }, status: :ok
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { message: "Error al crear la orden", errors: e.record.errors.full_messages }, status: :unprocessable_entity
+  end
+
   def update
     quotation = Quotation.find(params[:id])
 

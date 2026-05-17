@@ -5,6 +5,12 @@ class Api::V1::Manager::AreaRequestsController < ApplicationController
   # before_action :authenticate_and_set_user 
 
   def index
+    # Auto-backfill existing completed requests that don't have unit_price stored yet
+    AreaRequest.where(status: 'completed', unit_price: nil).each do |ar|
+      item = ar.quotation&.quotation_items&.first
+      ar.update_columns(unit_price: item.unit_price, machine_ready: true) if item
+    end
+
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
     
