@@ -6,9 +6,10 @@ module CodeGenerator
   end
 
   def generate_unique_code
-    return unless self.respond_to?(:name) && self.name.present?
+    target_name = self.respond_to?(:name) ? self.name : (self.respond_to?(:business_name) ? self.business_name : nil)
+    return if target_name.blank?
 
-    base_code = generate_code_from_name(self.name)
+    base_code = generate_code_from_name(target_name)
     
     existing_codes = self.class.where("code LIKE ?", "#{base_code}%").pluck(:code)
     

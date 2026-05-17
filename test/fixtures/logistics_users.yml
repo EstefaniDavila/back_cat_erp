@@ -1,7 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  email: MyString
+  first_name: Log
+  last_name: One
+  email: log1@test.com
+  document_number: "LOG-1"
 
 two:
-  email: MyString
+  first_name: Log
+  last_name: Two
+  email: log2@test.com
+  document_number: "LOG-2"

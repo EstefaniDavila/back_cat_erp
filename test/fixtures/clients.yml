@@ -1,31 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  code: MyString
-  business_name: MyString
-  document_type: MyString
-  document_number: MyString
-  contact_name: MyString
-  phone: MyString
-  email: MyString
-  address: MyText
-  city: MyString
-  status: MyString
-  client_category: MyString
-  first_contact_date: 2026-05-03
-  last_purchase_date: 2026-05-03
+  code: CLI-001
+  business_name: Client One
+  document_number: "111111111"
+  email: client1@test.com
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  code: MyString
-  business_name: MyString
-  document_type: MyString
-  document_number: MyString
-  contact_name: MyString
-  phone: MyString
-  email: MyString
-  address: MyText
-  city: MyString
-  status: MyString
-  client_category: MyString
-  first_contact_date: 2026-05-03
-  last_purchase_date: 2026-05-03
+  code: CLI-002
+  business_name: Client Two
+  document_number: "222222222"
+  email: client2@test.com
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -5,7 +5,7 @@ module Api
       class DispatchOrdersController < ApplicationController
         protect_from_forgery with: :null_session
         before_action :set_dispatch_order, only: [:show, :update, :destroy, :process_dispatch, :deliver, :cancel]
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
         # GET /api/v1/admin/dispatch_orders
         def index

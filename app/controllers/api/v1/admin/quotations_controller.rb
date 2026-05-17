@@ -9,10 +9,10 @@ class Api::V1::Admin::QuotationsController < ApplicationController
     fields = params[:search_fields]&.split(",") || []
     
     # El Admin ve todas las cotizaciones
-    quotations = Quotation.includes(:client, :advisor)
+    quotations = Quotation.includes(:client, :advisor, :quotation_items)
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       quotations = quotations.ransack(search_conditions).result
     end
 
@@ -30,13 +30,22 @@ class Api::V1::Admin::QuotationsController < ApplicationController
     quotations = quotations.page(page).per(page_size)
 
     quotations_data = quotations.map do |quo|
+      advisor_name = if quo.advisor.nil? || quo.advisor.email == "sistema@erpcat.com"
+                       "Sin asignar"
+                     else
+                       "#{quo.advisor.first_name} #{quo.advisor.last_name}"
+                     end
       {
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
-        advisor_name: "#{quo.advisor.first_name} #{quo.advisor.last_name}",
+        customer: quo.client.business_name, # Frontend espera 'customer' en lugar de 'client_name'
+        advisor: advisor_name, # Frontend espera 'advisor' 
+        advisor_name: advisor_name,
+        items: quo.quotation_items.map { |i| { id: i.id, description: i.description, quantity: i.quantity, unit_price: i.unit_price, total_price: i.total_price, item_type: i.item_type } },
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
-        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
+        updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M"),
+        date: quo.created_at.strftime("%d/%m/%Y")
       }
     end
 
@@ -52,12 +61,18 @@ class Api::V1::Admin::QuotationsController < ApplicationController
   def show
     quotation = Quotation.find_by!(id: params[:id])
     
+    advisor_name = if quotation.advisor.nil? || quotation.advisor.email == "sistema@erpcat.com"
+                     "Sin asignar"
+                   else
+                     "#{quotation.advisor.first_name} #{quotation.advisor.last_name}"
+                   end
+
     render json: {
       quotation: {
         id: quotation.id,
         **quotation.attributes.symbolize_keys,
         client_name: quotation.client.business_name,
-        advisor_name: "#{quotation.advisor.first_name} #{quotation.advisor.last_name}",
+        advisor_name: advisor_name,
         items: quotation.quotation_items,
         created_at: quotation.created_at.strftime("%d/%m/%Y %H:%M"),
       },

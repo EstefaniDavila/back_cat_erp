@@ -5,6 +5,12 @@ class Api::V1::Manager::AreaRequestsController < ApplicationController
   # before_action :authenticate_and_set_user 
 
   def index
+    # Auto-backfill existing completed requests that don't have unit_price stored yet
+    AreaRequest.where(status: 'completed', unit_price: nil).each do |ar|
+      item = ar.quotation&.quotation_items&.first
+      ar.update_columns(unit_price: item.unit_price, machine_ready: true) if item
+    end
+
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
     
@@ -35,6 +41,7 @@ class Api::V1::Manager::AreaRequestsController < ApplicationController
         id: req.id,
         **req.attributes.symbolize_keys,
         quotation_code: req.quotation.code,
+        quotation_items: req.quotation.quotation_items.map { |i| { description: i.description, quantity: i.quantity } },
         creator_email: req.created_by&.email,
         reviewer_email: req.reviewed_by&.email,
         created_at: req.created_at.strftime("%d/%m/%Y %H:%M"),
@@ -62,5 +69,31 @@ class Api::V1::Manager::AreaRequestsController < ApplicationController
       },
       status: :ok
     }
+  end
+
+  def create
+    current_user_id = params[:user_id] || 1 
+    
+    # Verificamos que la cotización exista
+    quotation = Quotation.find(params[:area_request][:quotation_id])
+
+    area_request = AreaRequest.new(area_request_params)
+    area_request.created_by_id = current_user_id
+    area_request.status = 'pending'
+
+    ActiveRecord::Base.transaction do
+      if area_request.save
+        quotation.update!(status: 'pending_area_review')
+        render json: { message: "Solicitud enviada al área de #{area_request.area}", area_request: area_request }, status: :ok
+      else
+        render json: { message: "Error al crear la solicitud", errors: area_request.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
+  end
+
+  private
+
+  def area_request_params
+    params.require(:area_request).permit(:quotation_id, :area, :name, :description)
   end
 end

@@ -14,11 +14,13 @@ Rails.application.routes.draw do
         get '/leads/:code',                                   to: 'leads#show'
         put '/leads/:id',                                     to: 'leads#update'
         put '/leads/:id/assign/:advisor_id',                  to: 'leads#assign'
+        get '/advisors',                                      to: 'leads#advisors'
 
         ####################### QUOTATIONS #########################
         get '/quotations',                                    to: 'quotations#index'
         get '/quotations/:code',                              to: 'quotations#show'
         put '/quotations/:id/approve',                        to: 'quotations#approve'
+        put '/quotations/:id/final_approve',                   to: 'quotations#final_approve'
         put '/quotations/:id/reject',                         to: 'quotations#reject'
         put '/quotations/:id/client_accept',                  to: 'quotations#client_accept'
         put '/quotations/:id',                                to: 'quotations#update'
@@ -26,6 +28,7 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
+        post '/area_requests',                                to: 'area_requests#create'
 
         ####################### MAINTENANCES ######################
         get '/maintenances',                                  to: 'maintenances#index'

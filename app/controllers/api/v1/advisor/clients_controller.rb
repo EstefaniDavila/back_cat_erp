@@ -5,9 +5,11 @@ class Api::V1::Advisor::ClientsController < ApplicationController
   # before_action :authenticate_and_set_user # (Descomenta cuando tengas la auth real)
 
   def index
+    current_advisor_id = params[:advisor_id] || 1
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
-    clients = Client.all
+    
+    clients = Client.joins(:client_advisors).where(client_advisors: { advisor_id: current_advisor_id })
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields(fields, keywords, "cont")
@@ -91,6 +93,34 @@ class Api::V1::Advisor::ClientsController < ApplicationController
     else
       render json: { message: client.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def send_credentials
+    client = Client.find(params[:id])
+    user = User.find_by(roleable: client)
+
+    generated_password = SecureRandom.alphanumeric(8)
+
+    if user
+      user.update!(password: generated_password)
+    else
+      user = User.create!(
+        email: client.email,
+        password: generated_password,
+        document_number: client.document_number,
+        roleable: client,
+        status: 'active'
+      )
+    end
+
+    # Aquí se enviaría el correo real: ClientMailer.welcome_email(user, generated_password).deliver_later
+
+    render json: { 
+      message: "Credenciales generadas y enviadas a #{client.email}",
+      temporary_password: generated_password 
+    }, status: :ok
+  rescue StandardError => e
+    render json: { message: "Error al generar credenciales", error: e.message }, status: :unprocessable_entity
   end
 
   private

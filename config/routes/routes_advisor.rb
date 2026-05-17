@@ -8,6 +8,7 @@ Rails.application.routes.draw do
         post '/clients',                                      to: 'clients#create'
         put '/clients/:id',                                   to: 'clients#update'
         delete '/clients/:id',                                to: 'clients#destroy'
+        post '/clients/:id/send_credentials',                 to: 'clients#send_credentials'
 
         ####################### LEADS ##############################
         get '/leads',                                         to: 'leads#index'
@@ -20,6 +21,8 @@ Rails.application.routes.draw do
         post '/quotations',                                   to: 'quotations#create'
         put '/quotations/:id',                                to: 'quotations#update'
         put '/quotations/:id/send_for_approval',              to: 'quotations#send_for_approval'
+        put '/quotations/:id/send_to_client',                  to: 'quotations#send_to_client'
+        put '/quotations/:id/reset_to_sent',                   to: 'quotations#reset_to_sent'
 
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'

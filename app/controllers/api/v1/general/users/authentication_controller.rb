@@ -51,7 +51,7 @@ module Users
           expire_at: response.headers["Expire-At"],
           user: {
             **resource.attributes.symbolize_keys,
-            full_name: resource.roleable&.full_name,
+            full_name: resource.full_name,
             roleable: resource.roleable&.as_json
           },
           # rol: resource.roleable_id,
@@ -113,7 +113,7 @@ module Users
     def find_resource
       if params[:authentication].present? && params[:authentication][:password].present?
         password = params[:authentication][:password]
-        
+        # debugger
         if params[:authentication][:document_number].present?
           login_value = params[:authentication][:document_number].downcase.strip
           self.resource = User.find_by("document_number = ?", login_value)

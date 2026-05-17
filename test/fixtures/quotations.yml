@@ -1,31 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  code: MyString
+  code: Q-001
   client: one
   advisor: one
-  lead: one
-  quotation_type: MyString
-  status: MyString
-  subtotal: 9.99
-  tax: 9.99
-  total: 9.99
-  valid_until: 2026-05-03
-  sent_at: 2026-05-03 01:21:53
-  approved_at: 2026-05-03 01:21:53
-  rejected_at: 2026-05-03 01:21:53
+  quotation_type: sale
+  status: pending
+  total: 1000
 
 two:
-  code: MyString
+  code: Q-002
   client: two
   advisor: two
-  lead: two
-  quotation_type: MyString
-  status: MyString
-  subtotal: 9.99
-  tax: 9.99
-  total: 9.99
-  valid_until: 2026-05-03
-  sent_at: 2026-05-03 01:21:53
-  approved_at: 2026-05-03 01:21:53
-  rejected_at: 2026-05-03 01:21:53
+  quotation_type: rental
+  status: pending
+  total: 2000

@@ -1,7 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  email: MyString
+  email: advisor_one@test.com
+  code: AD-001
+  document_number: "33333333"
 
 two:
-  email: MyString
+  email: advisor_two@test.com
+  code: AD-002
+  document_number: "44444444"

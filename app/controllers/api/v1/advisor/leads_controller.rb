@@ -6,11 +6,15 @@ class Api::V1::Advisor::LeadsController < ApplicationController
 
   def index
     current_advisor_id = params[:advisor_id] || 1 
-
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
-    
-    leads = Lead.where(assigned_to_id: current_advisor_id)
+
+    client_ids = ClientAdvisor.where(advisor_id: current_advisor_id).pluck(:client_id)
+    leads = Lead.where(assigned_to_id: current_advisor_id, client_id: client_ids)
+
+    if params[:priority].present?
+      leads = leads.where(priority: params[:priority])
+    end
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields(fields, keywords, "cont")
@@ -30,10 +34,31 @@ class Api::V1::Advisor::LeadsController < ApplicationController
     page_size = params[:pageSize] || 10
     leads = leads.page(page).per(page_size)
 
-    leads_data = leads.map do |lead|
+    leads_data = leads.includes(:client, :assigned_to, :quotations => :quotation_items).map do |lead|
+      quotation = lead.quotations.first
+      items_data = []
+      if quotation
+        items_data = quotation.quotation_items.map do |item|
+          {
+            id: item.id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price.to_f,
+            total_price: item.total_price.to_f
+          }
+        end
+      end
+
       {
         id: lead.id,
         **lead.attributes.symbolize_keys,
+        type: lead.lead_type,
+        client_name: lead.client&.business_name || lead.client&.contact_name,
+        client_document: lead.client&.document_number,
+        client_code: lead.client&.code,
+        assigned_to_name: lead.assigned_to ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
+        quotation_id: lead.quotations.first&.id,
+        quotation_items: items_data,
         created_at: lead.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: lead.updated_at.strftime("%d/%m/%Y %H:%M")
       }
@@ -50,19 +75,34 @@ class Api::V1::Advisor::LeadsController < ApplicationController
 
   def show
     current_advisor_id = params[:advisor_id] || 1 
-    lead = Lead.find_by(id: params[:id], assigned_to_id: current_advisor_id) || Lead.find_by(code: params[:code], assigned_to_id: current_advisor_id)
+    lead = Lead.includes(:client, :quotations => :quotation_items).where.not(status: ['new', 'pending']).find_by(id: params[:id], assigned_to_id: current_advisor_id) || Lead.includes(:client, :quotations => :quotation_items).where.not(status: ['new', 'pending']).find_by(code: params[:code], assigned_to_id: current_advisor_id)
     
     if lead
+      quotation = lead.quotations.first
+      items_data = []
+      if quotation
+        items_data = quotation.quotation_items.map do |item|
+          {
+            id: item.id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price.to_f,
+            total_price: item.total_price.to_f
+          }
+        end
+      end
+
       render json: {
         lead: {
           id: lead.id,
           **lead.attributes.symbolize_keys,
+          quotation_items: items_data,
           created_at: lead.created_at.strftime("%d/%m/%Y %H:%M"),
         },
         status: :ok
       }
     else
-      render json: { error: "Lead no encontrado o no tienes permiso para verlo" }, status: :not_found
+      render json: { error: "Lead no encontrado o no tienes permiso para verlo" }, status: :not_found 
     end
   end
 

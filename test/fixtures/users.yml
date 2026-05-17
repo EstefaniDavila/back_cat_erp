@@ -1,7 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  email: MyString
+  email: user_one@test.com
+  document_number: "11111111"
+  roleable: one (Admin)
 
 two:
-  email: MyString
+  email: user_two@test.com
+  document_number: "22222222"
+  roleable: two (Admin)

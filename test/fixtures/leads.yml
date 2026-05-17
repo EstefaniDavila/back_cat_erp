@@ -1,27 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  code: MyString
-  name: MyString
-  email: MyString
-  phone: MyString
-  source: MyString
-  lead_type: MyString
-  status: MyString
-  priority: MyString
+  code: LD-001
+  name: Lead One
+  email: lead1@test.com
   assigned_to: one
   client: one
-  notes: MyText
+  status: new
 
 two:
-  code: MyString
-  name: MyString
-  email: MyString
-  phone: MyString
-  source: MyString
-  lead_type: MyString
-  status: MyString
-  priority: MyString
+  code: LD-002
+  name: Lead Two
+  email: lead2@test.com
   assigned_to: two
   client: two
-  notes: MyText
+  status: new

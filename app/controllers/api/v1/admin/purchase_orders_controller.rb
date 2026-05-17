@@ -7,7 +7,7 @@ module Api
         protect_from_forgery with: :null_session
         before_action :set_purchase_order, only: [:show, :update, :destroy, :receive, :cancel, :download_guide]
 
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
 
         def index

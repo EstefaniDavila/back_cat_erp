@@ -1,21 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  product_type: MyString
-  code: MyString
-  name: MyString
-  description: MyText
-  base_price: 9.99
-  active: false
+  product_type: spare_part
+  code: PROD-001
+  name: Product One
+  base_price: 100
+  active: true
   created_by: one
   updated_by: one
 
 two:
-  product_type: MyString
-  code: MyString
-  name: MyString
-  description: MyText
-  base_price: 9.99
-  active: false
+  product_type: vehicle
+  code: PROD-002
+  name: Product Two
+  base_price: 200
+  active: true
   created_by: two
   updated_by: two

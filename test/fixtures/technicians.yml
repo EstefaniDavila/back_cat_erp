@@ -1,7 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  email: MyString
+  first_name: Tech
+  last_name: One
+  email: tech1@test.com
+  document_number: "TECH-1"
+  status: active
 
 two:
-  email: MyString
+  first_name: Tech
+  last_name: Two
+  email: tech2@test.com
+  document_number: "TECH-2"
+  status: active

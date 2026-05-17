@@ -3,6 +3,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :admin do
         #######################EJEEMPLOO##############################
+        get '/dashboard',                                     to: 'dashboards#index'
+        get '/area_control',                                  to: 'area_controls#index'
         get '/areas',                                         to: 'areas#index'
         get '/areas/select',                                  to: 'areas#index_select'
         get '/areas_program/:code',                           to: 'areas#history'
@@ -97,6 +99,7 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
+        post '/area_requests',                                to: 'area_requests#create'
         put '/area_requests/:id/reply',                       to: 'area_requests#reply'
        ####################### Categorías de Repuestos ##############################
         get    '/spare_part_categories',                   to: 'spare_part_categories#index'
@@ -158,6 +161,11 @@ Rails.application.routes.draw do
         # Rutas anidadas 
         get    '/suppliers/:supplier_id/supplier_products', to: 'supplier_products#index_by_supplier'
         get    '/products/:product_id/supplier_products',   to: 'supplier_products#index_by_product'
+
+        ####################### Órdenes de Venta ##############################
+        get    '/sales_orders',                      to: 'sales_orders#index'
+        get    '/sales_orders/:id',                  to: 'sales_orders#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        delete '/sales_orders/:id',                  to: 'sales_orders#destroy'
 
         ####################### Órdenes de Compra ##############################
         get    '/purchase_orders',                   to: 'purchase_orders#index'

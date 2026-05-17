@@ -11,7 +11,7 @@ class Api::V1::Admin::LeadsController < ApplicationController
     leads = Lead.all
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       leads = leads.ransack(search_conditions).result
     end
 
@@ -32,7 +32,8 @@ class Api::V1::Admin::LeadsController < ApplicationController
       {
         id: lead.id,
         **lead.attributes.symbolize_keys,
-        assigned_to_name: lead.assigned_to ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
+        type: lead.lead_type,
+        assigned_to_name: (lead.assigned_to && lead.assigned_to.email != 'sistema@erpcat.com' && ClientAdvisor.exists?(client_id: lead.client_id, advisor_id: lead.assigned_to_id)) ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
         created_at: lead.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: lead.updated_at.strftime("%d/%m/%Y %H:%M")
       }
@@ -55,7 +56,8 @@ class Api::V1::Admin::LeadsController < ApplicationController
         lead: {
           id: lead.id,
           **lead.attributes.symbolize_keys,
-          assigned_to_name: lead.assigned_to ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
+          type: lead.lead_type,
+          assigned_to_name: (lead.assigned_to && lead.assigned_to.email != 'sistema@erpcat.com' && ClientAdvisor.exists?(client_id: lead.client_id, advisor_id: lead.assigned_to_id)) ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
           created_at: lead.created_at.strftime("%d/%m/%Y %H:%M"),
         },
         status: :ok
@@ -70,11 +72,18 @@ class Api::V1::Admin::LeadsController < ApplicationController
     lead = Lead.find(params[:id])
     advisor = Advisor.find(params[:advisor_id])
 
-    if lead.update(assigned_to: advisor, status: 'assigned')
-      render json: { message: "Lead asignado exitosamente al asesor #{advisor.first_name}", lead: lead }, status: :ok
-    else
-      render json: { message: "Error al asignar", errors: lead.errors.full_messages }, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      lead.update!(assigned_to: advisor, status: 'assigned')
+      if lead.client_id.present?
+        ClientAdvisor.find_or_create_by!(client_id: lead.client_id, advisor_id: advisor.id)
+      end
+      # También asignamos todas las cotizaciones de este lead al asesor!
+      lead.quotations.update_all(advisor_id: advisor.id)
     end
+
+    render json: { message: "Lead asignado exitosamente al asesor #{advisor.first_name}", lead: lead }, status: :ok
+  rescue => e
+    render json: { message: "Error al asignar", errors: [e.message] }, status: :unprocessable_entity
   end
 
   def update

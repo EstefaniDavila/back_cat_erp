@@ -5,7 +5,7 @@ module Api
       class DeliveryGuidesController < ApplicationController
         protect_from_forgery with: :null_session
         before_action :set_delivery_guide, only: [:show, :update, :destroy, :mark_as_issued, :mark_as_delivered]
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
         # GET /api/v1/admin/delivery_guides
         def index

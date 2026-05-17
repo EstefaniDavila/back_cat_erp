@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_17_055900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -66,6 +66,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
     t.uuid "reviewed_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "unit_price", precision: 12, scale: 2
+    t.boolean "machine_ready"
     t.index ["created_by_id"], name: "index_area_requests_on_created_by_id"
     t.index ["quotation_id"], name: "index_area_requests_on_quotation_id"
     t.index ["reviewed_by_id"], name: "index_area_requests_on_reviewed_by_id"
@@ -403,7 +405,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
     t.datetime "approved_at"
     t.datetime "rejected_at"
     t.uuid "client_id", null: false
-    t.uuid "advisor_id", null: false
+    t.uuid "advisor_id"
     t.uuid "lead_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -618,8 +620,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
   end
 
   create_table "vehicles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "product_id", null: false
-    t.uuid "vehicle_model_id", null: false
     t.string "serial"
     t.integer "manufacture_year"
     t.decimal "hours_used", precision: 10, scale: 2
@@ -627,6 +627,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_08_064913) do
     t.decimal "price_per_hour", precision: 12, scale: 2
     t.decimal "price_per_day", precision: 12, scale: 2
     t.string "location"
+    t.uuid "product_id", null: false
+    t.uuid "vehicle_model_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_vehicles_on_product_id"
