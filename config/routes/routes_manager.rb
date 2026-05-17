@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         get '/leads/:code',                                   to: 'leads#show'
         put '/leads/:id',                                     to: 'leads#update'
         put '/leads/:id/assign/:advisor_id',                  to: 'leads#assign'
+        get '/advisors',                                      to: 'leads#advisors'
 
         ####################### QUOTATIONS #########################
         get '/quotations',                                    to: 'quotations#index'

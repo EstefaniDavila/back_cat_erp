@@ -12,7 +12,7 @@ class Api::V1::Admin::QuotationsController < ApplicationController
     quotations = Quotation.includes(:client, :advisor)
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       quotations = quotations.ransack(search_conditions).result
     end
 

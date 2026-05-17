@@ -32,8 +32,8 @@ class Api::V1::Manager::QuotationsController < ApplicationController
       {
         id: quo.id,
         **quo.attributes.symbolize_keys,
-        client_name: quo.client.business_name,
-        advisor_name: "#{quo.advisor.first_name} #{quo.advisor.last_name}",
+        client_name: quo.client&.business_name || quo.client&.contact_name || 'Sin cliente',
+        advisor_name: quo.advisor ? "#{quo.advisor.first_name} #{quo.advisor.last_name}" : 'Sin asignar',
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
       }

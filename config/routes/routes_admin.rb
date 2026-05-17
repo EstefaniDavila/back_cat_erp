@@ -97,6 +97,7 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
+        post '/area_requests',                                to: 'area_requests#create'
         put '/area_requests/:id/reply',                       to: 'area_requests#reply'
        ####################### Categorías de Repuestos ##############################
         get    '/spare_part_categories',                   to: 'spare_part_categories#index'

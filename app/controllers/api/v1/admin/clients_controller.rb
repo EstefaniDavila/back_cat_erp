@@ -10,7 +10,7 @@ class Api::V1::Admin::ClientsController < ApplicationController
     clients = Client.all
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       clients = clients.ransack(search_conditions).result
     end
 
@@ -93,6 +93,6 @@ class Api::V1::Admin::ClientsController < ApplicationController
   private
 
   def client_params
-    params.require(:client).permit(:business_name, :document_type, :document_number, :contact_name, :phone, :email, :address, :city, :status)
+    params.require(:client).permit(:business_name, :document_type, :document_number, :contact_name, :phone, :email, :address, :city, :status, :client_category)
   end
 end

@@ -38,6 +38,8 @@ class Api::V1::Advisor::AreaRequestsController < ApplicationController
         id: req.id,
         **req.attributes.symbolize_keys,
         quotation_code: req.quotation.code,
+        creator_email: req.created_by&.email,
+        creator_role: req.created_by&.roleable_type,
         reviewer_email: req.reviewed_by&.email,
         created_at: req.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: req.updated_at.strftime("%d/%m/%Y %H:%M")

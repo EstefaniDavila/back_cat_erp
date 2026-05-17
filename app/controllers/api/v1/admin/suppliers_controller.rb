@@ -2,7 +2,7 @@ module Api
   module V1
     module Admin
       class SuppliersController < ApplicationController
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
         before_action :set_supplier, only: [:show, :update, :destroy]
 
         def index

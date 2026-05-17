@@ -8,6 +8,7 @@ Rails.application.routes.draw do
         post '/clients',                                      to: 'clients#create'
         put '/clients/:id',                                   to: 'clients#update'
         delete '/clients/:id',                                to: 'clients#destroy'
+        post '/clients/:id/send_credentials',                 to: 'clients#send_credentials'
 
         ####################### LEADS ##############################
         get '/leads',                                         to: 'leads#index'

@@ -11,7 +11,7 @@ class Api::V1::Admin::LeadsController < ApplicationController
     leads = Lead.all
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       leads = leads.ransack(search_conditions).result
     end
 

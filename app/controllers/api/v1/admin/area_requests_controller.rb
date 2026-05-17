@@ -11,7 +11,7 @@ class Api::V1::Admin::AreaRequestsController < ApplicationController
     requests = AreaRequest.includes(:quotation, :reviewed_by, :created_by)
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_fields(fields, keywords, "cont")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       requests = requests.ransack(search_conditions).result
     end
 
@@ -34,6 +34,7 @@ class Api::V1::Admin::AreaRequestsController < ApplicationController
         **req.attributes.symbolize_keys,
         quotation_code: req.quotation.code,
         creator_email: req.created_by&.email,
+        creator_role: req.created_by&.roleable_type,
         reviewer_email: req.reviewed_by&.email,
         created_at: req.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: req.updated_at.strftime("%d/%m/%Y %H:%M")
@@ -62,6 +63,22 @@ class Api::V1::Admin::AreaRequestsController < ApplicationController
     }
   end
 
+  def create
+    current_user_id = params[:user_id] || 1 
+    
+    quotation = Quotation.find(params[:area_request][:quotation_id])
+
+    area_request = AreaRequest.new(area_request_params)
+    area_request.created_by_id = current_user_id
+    area_request.status = 'pending'
+
+    if area_request.save
+      render json: { message: "Solicitud enviada al área de #{area_request.area}", area_request: area_request }, status: :ok
+    else
+      render json: { message: "Error al crear la solicitud", errors: area_request.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   # Función para que Logística/Operaciones (o el Admin) respondan a la solicitud
   def reply
     current_user_id = params[:user_id] || 1 
@@ -77,5 +94,11 @@ class Api::V1::Admin::AreaRequestsController < ApplicationController
     else
       render json: { message: "Error al responder", errors: area_request.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def area_request_params
+    params.require(:area_request).permit(:quotation_id, :area, :name, :description)
   end
 end

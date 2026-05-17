@@ -10,8 +10,9 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
     
-    # El asesor SOLO ve las cotizaciones que él creó
-    quotations = Quotation.where(advisor_id: current_advisor_id).includes(:client)
+    # El asesor ve las cotizaciones que tiene asignadas o las que están sin asignar/por asignar
+    por_asignar_id = Advisor.find_by(email: "sistema@erpcat.com")&.id
+    quotations = Quotation.where(advisor_id: [current_advisor_id, nil, por_asignar_id].compact).includes(:client, :quotation_items)
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields(fields, keywords, "cont")
@@ -36,6 +37,17 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
+        items: quo.quotation_items.map { |item|
+          {
+            id: item.id,
+            product_id: item.product_id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price.to_f,
+            total_price: item.total_price.to_f,
+            item_type: item.item_type
+          }
+        },
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
       }
@@ -51,8 +63,7 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
   end
 
   def show
-    current_advisor_id = params[:advisor_id] || 1 
-    quotation = Quotation.find_by!(id: params[:id], advisor_id: current_advisor_id)
+    quotation = Quotation.find(params[:id])
     
     render json: {
       quotation: {
@@ -80,8 +91,7 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
   end
 
   def update
-    current_advisor_id = params[:advisor_id] || 1 
-    quotation = Quotation.find_by!(id: params[:id], advisor_id: current_advisor_id)
+    quotation = Quotation.find(params[:id])
 
     if quotation.update(quotation_params)
       render json: { message: "Cotización actualizada", quotation: quotation }, status: :ok
@@ -92,8 +102,7 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
 
   # Acción para que el asesor envíe a revisión al manager
   def send_for_approval
-    current_advisor_id = params[:advisor_id] || 1 
-    quotation = Quotation.find_by!(id: params[:id], advisor_id: current_advisor_id)
+    quotation = Quotation.find(params[:id])
 
     if quotation.update(status: 'pending_approval')
       render json: { message: "Enviado a revisión del Gerente", quotation: quotation }, status: :ok
@@ -105,6 +114,6 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
   private
 
   def quotation_params
-    params.require(:quotation).permit(:quotation_type, :subtotal, :tax, :total, :valid_until, :client_id, :lead_id)
+    params.require(:quotation).permit(:quotation_type, :subtotal, :tax, :total, :valid_until, :client_id, :lead_id, :status)
   end
 end

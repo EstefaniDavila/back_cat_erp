@@ -38,16 +38,24 @@ class Api::V1::Client::PublicController < ApplicationController
       end
 
       # 2. Crear el Lead (Prospecto) para que el Manager lo asigne
+      default_advisor = Advisor.find_or_initialize_by(email: "sistema@erpcat.com") do |a|
+        a.first_name = "Por"
+        a.last_name = "Asignar"
+        a.document_number = "00000000"
+      end
+      default_advisor.save(validate: false) if default_advisor.new_record?
+
       lead = Lead.create!(
         client: client,
         name: "Cotización Web - #{params[:type]}",
         email: client.email,
         phone: client.phone,
         source: 'landing_page',
-        type: params[:type],
+        lead_type: params[:type],
         notes: params[:notes],
         status: 'new',
-        priority: 'high'
+        priority: 'NC',
+        assigned_to_id: default_advisor.id
       )
 
       # 3. Crear la Cotización Web (con el carrito de compras)
@@ -55,12 +63,12 @@ class Api::V1::Client::PublicController < ApplicationController
         client_id: client.id,
         lead_id: lead.id,
         quotation_type: params[:type], # 'sale', 'rental', 'spare_parts', etc.
-        status: 'web_request',
+        status: 'pending',
         valid_until: Time.current + 15.days,
         subtotal: params[:subtotal] || 0,
         tax: params[:tax] || 0,
         total: params[:total] || 0,
-        advisor_id: nil # Aún no tiene asesor
+        advisor_id: default_advisor.id
       )
 
       # 4. Procesar los Items del Carrito

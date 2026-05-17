@@ -1,520 +1,295 @@
 # =============================================================================
-# SCRIPT DE SEED MASIVO - ERP CAT
+# SEED MASIVO - ERP CAT
 # Uso: rails runner scripts/seed_masivo.rb
-# Crea un usuario por rol (DNI = password), + datos masivos
 # =============================================================================
-
-puts "\n🚀 INICIANDO SEED MASIVO..."
+puts "\n🚀 SEED MASIVO INICIANDO..."
 puts "=" * 60
 
-# ─────────────────────────────────────────────────────────────
-# HELPERS
-# ─────────────────────────────────────────────────────────────
-def log(msg)
-  puts "  ✅ #{msg}"
-end
+def log(msg)   = puts("  ✅ #{msg}")
+def warn_log(m)= puts("  ⚠️  #{m}")
 
-def warn_log(msg)
-  puts "  ⚠️  #{msg}"
-end
+ActiveRecord::Base.transaction do
 
-# ─────────────────────────────────────────────────────────────
-# 1. USUARIOS POR ROL (DNI = password)
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [1/9] Creando usuarios por rol..."
+# ── 1. ROLES / USUARIOS ──────────────────────────────────────
+puts "\n📌 [1] Usuarios por rol (DNI = password)..."
 
-# ADMIN
 unless Admin.exists?(document_number: "10000001")
-  Admin.create!(
-    first_name: "Carlos",
-    last_name:  "Administrador",
-    full_name:  "Carlos Administrador",
-    email:      "admin@erpcat.com",
-    document_number: "10000001",
-    document_type:   "DNI"
-  )
-  log "Admin creado  → DNI: 10000001 | Email: admin@erpcat.com | Password: 10000001"
-else
-  warn_log "Admin ya existe"
-end
+  Admin.create!(first_name: "Carlos", last_name: "Admin", full_name: "Carlos Admin",
+    email: "admin@erpcat.com", document_number: "10000001", document_type: "DNI")
+  log "Admin → admin@erpcat.com / 10000001"
+else; warn_log "Admin ya existe"; end
 
-# MANAGER
 unless Manager.exists?(document_number: "10000002")
-  Manager.create!(
-    first_name: "María",
-    last_name:  "Gerente",
-    full_name:  "María Gerente",
-    email:      "manager@erpcat.com",
-    document_number: "10000002",
-    document_type:   "DNI",
-    area:            "Comercial"
-  )
-  log "Manager creado → DNI: 10000002 | Email: manager@erpcat.com | Password: 10000002"
-else
-  warn_log "Manager ya existe"
-end
+  Manager.create!(first_name: "Maria", last_name: "Gerente", full_name: "Maria Gerente",
+    email: "manager@erpcat.com", document_number: "10000002", document_type: "DNI", area: "Comercial")
+  log "Manager → manager@erpcat.com / 10000002"
+else; warn_log "Manager ya existe"; end
 
-# ADVISOR
 unless Advisor.exists?(document_number: "10000003")
-  Advisor.create!(
-    first_name:      "Luis",
-    last_name:       "Asesor",
-    full_name:       "Luis Asesor",
-    email:           "advisor@erpcat.com",
-    document_number: "10000003",
-    document_type:   "DNI",
-    code:            "ADV-001",
-    phone:           "999000003",
-    commission_rate: 5.0,
-    status:          "active"
-  )
-  log "Advisor creado → DNI: 10000003 | Email: advisor@erpcat.com | Password: 10000003"
-else
-  warn_log "Advisor ya existe"
-end
+  Advisor.create!(first_name: "Luis", last_name: "Asesor", full_name: "Luis Asesor",
+    email: "advisor@erpcat.com", document_number: "10000003", document_type: "DNI",
+    code: "ADV-001", phone: "999000003", commission_rate: 5.0, status: "active")
+  log "Advisor → advisor@erpcat.com / 10000003"
+else; warn_log "Advisor ya existe"; end
 
-# TECHNICIAN
 unless Technician.exists?(document_number: "10000004")
-  Technician.create!(
-    first_name:      "Pedro",
-    last_name:       "Técnico",
-    full_name:       "Pedro Técnico",
-    email:           "technician@erpcat.com",
-    document_number: "10000004",
-    document_type:   "DNI",
-    specialty:       "Maquinaria pesada",
-    certification:   "ISO 9001",
-    status:          "active"
-  )
-  log "Technician creado → DNI: 10000004 | Email: technician@erpcat.com | Password: 10000004"
-else
-  warn_log "Technician ya existe"
-end
+  Technician.create!(first_name: "Pedro", last_name: "Tecnico", full_name: "Pedro Tecnico",
+    email: "technician@erpcat.com", document_number: "10000004", document_type: "DNI",
+    specialty: "Maquinaria pesada", certification: "ISO 9001", status: "active")
+  log "Technician → technician@erpcat.com / 10000004"
+else; warn_log "Technician ya existe"; end
 
-# LOGISTICS USER
 unless LogisticsUser.exists?(document_number: "10000005")
-  LogisticsUser.create!(
-    first_name:      "Ana",
-    last_name:       "Logística",
-    full_name:       "Ana Logística",
-    email:           "logistics@erpcat.com",
-    document_number: "10000005",
-    document_type:   "DNI",
-    position:        "Conductor"
-  )
-  log "LogisticsUser creado → DNI: 10000005 | Email: logistics@erpcat.com | Password: 10000005"
-else
-  warn_log "LogisticsUser ya existe"
-end
+  LogisticsUser.create!(first_name: "Ana", last_name: "Logistica", full_name: "Ana Logistica",
+    email: "logistics@erpcat.com", document_number: "10000005", document_type: "DNI", position: "Conductor")
+  log "LogisticsUser → logistics@erpcat.com / 10000005"
+else; warn_log "LogisticsUser ya existe"; end
 
-# WAREHOUSEMAN
 unless Warehouseman.exists?(document_number: "10000006")
-  wm = Warehouseman.create!(
-    first_name:      "Jorge",
-    last_name:       "Almacén",
-    full_name:       "Jorge Almacén",
-    email:           "warehouse@erpcat.com",
-    document_number: "10000006",
-    document_type:   "DNI",
-    position:        "Jefe de Almacén"
-  )
-  # Warehouseman no tiene after_create :generate_user, crearlo manualmente
-  unless User.exists?(document_number: "10000006")
-    User.create!(
-      email:            "warehouse@erpcat.com",
-      document_number:  "10000006",
-      password:         "10000006",
-      password_confirmation: "10000006",
-      roleable: wm
-    )
-  end
-  log "Warehouseman creado → DNI: 10000006 | Email: warehouse@erpcat.com | Password: 10000006"
-else
-  warn_log "Warehouseman ya existe"
-end
+  wm = Warehouseman.create!(first_name: "Jorge", last_name: "Almacen", full_name: "Jorge Almacen",
+    email: "warehouse@erpcat.com", document_number: "10000006", document_type: "DNI", position: "Jefe Almacen")
+  User.create!(email: "warehouse@erpcat.com", document_number: "10000006",
+    password: "10000006", password_confirmation: "10000006", roleable: wm) unless User.exists?(document_number: "10000006")
+  log "Warehouseman → warehouse@erpcat.com / 10000006"
+else; warn_log "Warehouseman ya existe"; end
 
-# CLIENT (vía registro normal, crea user automático)
 unless Client.exists?(document_number: "10000007")
-  client_user = Client.create!(
-    business_name:   "Cliente Demo S.A.C.",
-    document_number: "10000007",
-    document_type:   "DNI",
-    email:           "cliente@erpcat.com",
-    contact_name:    "Roberto Cliente",
-    phone:           "999000007",
-    status:          "active"
-  )
-  unless User.exists?(document_number: "10000007")
-    User.create!(
-      email:            "cliente@erpcat.com",
-      document_number:  "10000007",
-      password:         "10000007",
-      password_confirmation: "10000007",
-      roleable: client_user
-    )
-  end
-  log "Client creado → DNI: 10000007 | Email: cliente@erpcat.com | Password: 10000007"
-else
-  warn_log "Client ya existe"
-end
+  cl = Client.create!(business_name: "Cliente Demo SAC", document_number: "10000007",
+    document_type: "DNI", email: "cliente@erpcat.com", contact_name: "Roberto Cliente",
+    phone: "999000007", status: "active")
+  User.create!(email: "cliente@erpcat.com", document_number: "10000007",
+    password: "10000007", password_confirmation: "10000007", roleable: cl) unless User.exists?(document_number: "10000007")
+  log "Client → cliente@erpcat.com / 10000007"
+else; warn_log "Client ya existe"; end
 
-# ─────────────────────────────────────────────────────────────
-# 2. VEHICLE TYPES & MODELS
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [2/9] Creando tipos y modelos de vehículos..."
-
-vehicle_types_data = [
-  { name: "Excavadora",    description: "Maquinaria de excavación pesada" },
-  { name: "Volquete",      description: "Camión volquete para transporte de material" },
-  { name: "Cargador",      description: "Cargador frontal de ruedas" },
-  { name: "Motoniveladora",description: "Máquina para nivelar terrenos" },
-  { name: "Retroexcavadora", description: "Retroexcavadora combinada" }
+# ── 2. VEHICLE TYPES ─────────────────────────────────────────
+puts "\n📌 [2] Tipos de vehículo..."
+vtype_data = [
+  ["Excavadora", "Maquinaria de excavacion pesada"],
+  ["Volquete", "Camion volquete para transporte"],
+  ["Cargador", "Cargador frontal de ruedas"],
+  ["Motoniveladora", "Maquina para nivelar terrenos"],
+  ["Retroexcavadora", "Retroexcavadora combinada"]
 ]
+vtypes = vtype_data.map { |n, d| VehicleType.find_or_create_by!(name: n) { |v| v.description = d } }
+log "#{vtypes.size} tipos listos"
 
-vtypes = vehicle_types_data.map do |vt|
-  VehicleType.find_or_create_by!(name: vt[:name]) { |v| v.description = vt[:description] }
-end
-log "#{vtypes.size} tipos de vehículo listos"
-
-vehicle_models_data = [
-  { brand: "Caterpillar", model: "320GC",   power_hp: 158, weight_ton: 20.5, capacity_m3: 1.2,  active: true, type_idx: 0 },
-  { brand: "Komatsu",     model: "PC210",   power_hp: 162, weight_ton: 21.0, capacity_m3: 1.0,  active: true, type_idx: 0 },
-  { brand: "Volvo",       model: "A40G",    power_hp: 420, weight_ton: 39.0, capacity_m3: 24.0, active: true, type_idx: 1 },
-  { brand: "Caterpillar", model: "777G",    power_hp: 1050,weight_ton: 95.0, capacity_m3: 55.0, active: true, type_idx: 1 },
-  { brand: "John Deere",  model: "744L",    power_hp: 252, weight_ton: 20.2, capacity_m3: 3.8,  active: true, type_idx: 2 },
-  { brand: "Caterpillar", model: "120K2",   power_hp: 148, weight_ton: 14.1, capacity_m3: 0.0,  active: true, type_idx: 3 },
-  { brand: "Komatsu",     model: "GD555-5", power_hp: 155, weight_ton: 14.7, capacity_m3: 0.0,  active: true, type_idx: 3 },
-  { brand: "JCB",         model: "3CX",     power_hp: 74,  weight_ton: 8.4,  capacity_m3: 0.28, active: true, type_idx: 4 },
+# ── 3. VEHICLE MODELS ────────────────────────────────────────
+puts "\n📌 [3] Modelos de vehículo..."
+vmodel_data = [
+  ["Caterpillar","320GC", 158, 20.5, 1.2,  0],
+  ["Komatsu",    "PC210", 162, 21.0, 1.0,  0],
+  ["Volvo",      "A40G",  420, 39.0, 24.0, 1],
+  ["Caterpillar","777G",  1050,95.0, 55.0, 1],
+  ["John Deere", "744L",  252, 20.2, 3.8,  2],
+  ["Caterpillar","120K2", 148, 14.1, 0.0,  3],
+  ["Komatsu",    "GD555", 155, 14.7, 0.0,  3],
+  ["JCB",        "3CX",   74,  8.4,  0.28, 4],
 ]
-
-vmodels = vehicle_models_data.map do |vm|
-  VehicleModel.find_or_create_by!(brand: vm[:brand], model: vm[:model]) do |m|
-    m.power_hp       = vm[:power_hp]
-    m.weight_ton     = vm[:weight_ton]
-    m.capacity_m3    = vm[:capacity_m3]
-    m.active         = vm[:active]
-    m.vehicle_type   = vtypes[vm[:type_idx]]
+vmodels = vmodel_data.map do |brand, model, hp, wt, cap, ti|
+  VehicleModel.find_or_create_by!(brand: brand, model: model) do |m|
+    m.power_hp = hp; m.weight_ton = wt; m.capacity_m3 = cap
+    m.active = true; m.vehicle_type = vtypes[ti]
   end
 end
-log "#{vmodels.size} modelos de vehículo listos"
+log "#{vmodels.size} modelos listos"
 
-# ─────────────────────────────────────────────────────────────
-# 3. SPARE PART CATEGORIES
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [3/9] Creando categorías de repuestos..."
-
-cat_names = ["Motor", "Hidráulico", "Transmisión", "Eléctrico", "Filtros", "Frenos", "Estructura", "Neumáticos"]
-spare_cats = cat_names.map do |name|
-  SparePartCategory.find_or_create_by!(name: name) { |c| c.description = "Categoría: #{name}" }
+# ── 4. VEHICLE MODEL SPECS ───────────────────────────────────
+puts "\n📌 [4] Specs de modelos..."
+vmodels.each_with_index do |vm, i|
+  next if VehicleModelSpec.exists?(vehicle_model: vm)
+  VehicleModelSpec.create!(vehicle_model: vm, key: "Potencia", value: vm.power_hp.to_s, unit: "HP")
+  VehicleModelSpec.create!(vehicle_model: vm, key: "Peso", value: vm.weight_ton.to_s, unit: "Ton")
 end
-log "#{spare_cats.size} categorías de repuestos listas"
+log "Specs creados"
 
-# ─────────────────────────────────────────────────────────────
-# 4. PRODUCTS - VEHICLES & SPARE PARTS
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [4/9] Creando productos (vehículos y repuestos)..."
+# ── 5. SPARE PART CATEGORIES ─────────────────────────────────
+puts "\n📌 [5] Categorías de repuestos..."
+cat_names = ["Motor","Hidraulico","Transmision","Electrico","Filtros","Frenos","Estructura","Neumaticos"]
+spare_cats = cat_names.map { |n| SparePartCategory.find_or_create_by!(name: n) { |c| c.description = "Cat: #{n}" } }
+log "#{spare_cats.size} categorías listas"
 
-admin_user = User.joins("JOIN admins ON users.roleable_id = admins.id AND users.roleable_type = 'Admin'")
-                 .first
+# ── 6. PRODUCTS: VEHICULOS ───────────────────────────────────
+puts "\n📌 [6] Productos - Vehículos..."
+admin_user = User.joins("JOIN admins ON users.roleable_id = admins.id AND users.roleable_type = 'Admin'").first
 
-if admin_user.nil?
-  puts "  ❌ No se encontró usuario Admin. Saltando productos..."
-else
-  # Vehículos
-  vehicle_products_data = [
-    { name: "Excavadora CAT 320GC - 2022",   desc: "Excavadora de orugas 20 ton",  price: 350000, model_idx: 0 },
-    { name: "Excavadora Komatsu PC210 - 2021",desc: "Excavadora hidráulica 21 ton", price: 320000, model_idx: 1 },
-    { name: "Volquete Volvo A40G - 2023",     desc: "Volquete articulado 39 ton",   price: 450000, model_idx: 2 },
-    { name: "Volquete CAT 777G - 2020",       desc: "Camión minero 95 ton",         price: 980000, model_idx: 3 },
-    { name: "Cargador John Deere 744L - 2022",desc: "Cargador frontal 3.8m3",       price: 280000, model_idx: 4 },
-    { name: "Motoniveladora CAT 120K2 - 2021",desc: "Motoniveladora 148HP",         price: 210000, model_idx: 5 },
-    { name: "Motoniveladora Komatsu GD555 - 2022",desc: "Motoniveladora 155HP",     price: 225000, model_idx: 6 },
-    { name: "Retroexcavadora JCB 3CX - 2023", desc: "Retroexcavadora combinada",    price: 95000,  model_idx: 7 },
+if admin_user
+  veh_data = [
+    ["Excavadora CAT 320GC 2022",    "Excavadora 20t",   350000, 0, "SRL-320GC-001"],
+    ["Excavadora Komatsu PC210 2021", "Excavadora 21t",   320000, 1, "SRL-PC210-001"],
+    ["Volquete Volvo A40G 2023",      "Volquete 39t",     450000, 2, "SRL-A40G-001"],
+    ["Volquete CAT 777G 2020",        "Camion 95t",       980000, 3, "SRL-777G-001"],
+    ["Cargador JD 744L 2022",         "Cargador 3.8m3",   280000, 4, "SRL-744L-001"],
+    ["Motoniveladora CAT 120K2 2021", "Moto 148HP",       210000, 5, "SRL-120K2-001"],
+    ["Motoniveladora Komatsu GD555",  "Moto 155HP",       225000, 6, "SRL-GD555-001"],
+    ["Retroexcavadora JCB 3CX 2023",  "Retro combinada",   95000, 7, "SRL-3CX-001"],
   ]
-
-  serials = ["SRL-320GC-001", "SRL-PC210-001", "SRL-A40G-001", "SRL-777G-001",
-             "SRL-744L-001", "SRL-120K2-001", "SRL-GD555-001", "SRL-3CX-001"]
-
-  created_veh = 0
-  vehicle_products_data.each_with_index do |vp, i|
-    next if Vehicle.exists?(serial: serials[i])
-    # Usamos nested attributes para que vehicle_model_id esté presente
-    # ANTES de que el after_create callback intente guardar el vehicle
-    Product.create!(
-      product_type: "vehicle",
-      name:         vp[:name],
-      description:  vp[:desc],
-      base_price:   vp[:price],
-      active:       true,
-      created_by:   admin_user,
-      updated_by:   admin_user,
+  created = 0
+  veh_data.each_with_index do |(name, desc, price, mi, serial), i|
+    next if Vehicle.exists?(serial: serial)
+    Product.create!(product_type: "vehicle", name: name, description: desc,
+      base_price: price, active: true, created_by: admin_user, updated_by: admin_user,
       vehicle_attributes: {
-        vehicle_model_id: vmodels[vp[:model_idx]].id,
-        serial:           serials[i],
-        manufacture_year: 2021 + (i % 3),
-        hours_used:       rand(100..5000).to_f,
-        status:           "available",
-        price_per_hour:   vp[:price] / 5000.0,
-        price_per_day:    vp[:price] / 500.0,
-        location:         ["Lima", "Arequipa", "Cusco", "Trujillo"].sample
-      }
-    )
-    created_veh += 1
-  rescue => e
-    warn_log "Vehicle #{vp[:name]}: #{e.message}"
+        vehicle_model_id: vmodels[mi].id, serial: serial,
+        manufacture_year: 2020 + (i % 4), hours_used: rand(100..4000).to_f,
+        status: "available", price_per_hour: price / 5000.0,
+        price_per_day: price / 300.0, location: ["Lima","Arequipa","Cusco","Trujillo"].sample
+      })
+    created += 1
+  rescue => e; warn_log "Veh #{name}: #{e.message}"
   end
-  log "#{created_veh} vehículos creados"
+  log "#{created} vehículos creados"
 
-  # Repuestos
-  spare_parts_data = [
-    { name: "Filtro de aceite CAT", part: "FLT-OIL-001", brand: "Caterpillar", price: 85,   stock: 50, min: 10, cat_idx: 4 },
-    { name: "Filtro hidráulico",    part: "FLT-HYD-001", brand: "Komatsu",     price: 120,  stock: 30, min: 5,  cat_idx: 4 },
-    { name: "Bomba hidráulica",     part: "BOM-HYD-001", brand: "Parker",      price: 3500, stock: 8,  min: 2,  cat_idx: 1 },
-    { name: "Manguera hidráulica",  part: "MNG-HYD-001", brand: "Gates",       price: 250,  stock: 40, min: 10, cat_idx: 1 },
-    { name: "Correa de alternador", part: "COR-ALT-001", brand: "Gates",       price: 95,   stock: 25, min: 5,  cat_idx: 0 },
-    { name: "Batería 12V 200Ah",    part: "BAT-12V-001", brand: "Bosch",       price: 450,  stock: 15, min: 3,  cat_idx: 3 },
-    { name: "Pastillas de freno",   part: "PAS-FRN-001", brand: "Brembo",      price: 320,  stock: 20, min: 5,  cat_idx: 5 },
-    { name: "Neumático 23.5R25",    part: "NEU-235-001", brand: "Bridgestone", price: 4500, stock: 12, min: 2,  cat_idx: 7 },
-    { name: "Aceite motor 15W40",   part: "ACE-MOT-001", brand: "Mobil",       price: 280,  stock: 60, min: 15, cat_idx: 0 },
-    { name: "Kit de sellos",        part: "KIT-SEL-001", brand: "Parker",      price: 180,  stock: 35, min: 8,  cat_idx: 1 },
+  # ── 7. PRODUCTS: REPUESTOS ─────────────────────────────────
+  puts "\n📌 [7] Productos - Repuestos..."
+  sp_data = [
+    ["Filtro aceite CAT",  "FLT-OIL-001","Caterpillar",85,   50,10,4],
+    ["Filtro hidraulico",  "FLT-HYD-001","Komatsu",    120,  30, 5,4],
+    ["Bomba hidraulica",   "BOM-HYD-001","Parker",     3500,  8, 2,1],
+    ["Manguera hidraulica","MNG-HYD-001","Gates",      250,  40,10,1],
+    ["Correa alternador",  "COR-ALT-001","Gates",       95,  25, 5,0],
+    ["Bateria 12V 200Ah",  "BAT-12V-001","Bosch",      450,  15, 3,3],
+    ["Pastillas de freno", "PAS-FRN-001","Brembo",     320,  20, 5,5],
+    ["Neumatico 23.5R25",  "NEU-235-001","Bridgestone",4500, 12, 2,7],
+    ["Aceite motor 15W40", "ACE-MOT-001","Mobil",      280,  60,15,0],
+    ["Kit de sellos",      "KIT-SEL-001","Parker",     180,  35, 8,1],
   ]
-
-  created_sp = 0
-  spare_parts_data.each do |sp|
-    next if SparePart.exists?(part_number: sp[:part])
-    # Usamos nested attributes para incluir spare_part_category_id desde el inicio
-    Product.create!(
-      product_type: "spare_part",
-      name:         sp[:name],
-      description:  "Repuesto original #{sp[:brand]} - #{sp[:name]}",
-      base_price:   sp[:price],
-      active:       true,
-      created_by:   admin_user,
-      updated_by:   admin_user,
+  created = 0
+  sp_data.each do |name, part, brand, price, stock, min, ci|
+    next if SparePart.exists?(part_number: part)
+    Product.create!(product_type: "spare_part", name: name,
+      description: "Repuesto #{brand} - #{name}", base_price: price,
+      active: true, created_by: admin_user, updated_by: admin_user,
       spare_part_attributes: {
-        part_number:            sp[:part],
-        manufacturer_brand:     sp[:brand],
-        stock:                  sp[:stock],
-        min_stock:              sp[:min],
-        sale_unit:              "unidad",
-        is_critical:            sp[:stock] <= sp[:min] * 2,
-        spare_part_category_id: spare_cats[sp[:cat_idx]].id
-      }
-    )
-    created_sp += 1
-  rescue => e
-    warn_log "SparePart #{sp[:name]}: #{e.message}"
+        part_number: part, manufacturer_brand: brand, stock: stock,
+        min_stock: min, sale_unit: "unidad", is_critical: stock <= min * 2,
+        spare_part_category_id: spare_cats[ci].id
+      })
+    created += 1
+  rescue => e; warn_log "SP #{name}: #{e.message}"
   end
-  log "#{created_sp} repuestos creados"
+  log "#{created} repuestos creados"
+else
+  warn_log "No hay admin_user, saltando productos"
 end
 
-# ─────────────────────────────────────────────────────────────
-# 5. SUPPLIERS
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [5/9] Creando proveedores..."
+# ── 8. SPARE PART SPECS & COMPATIBILIDADES ───────────────────
+puts "\n📌 [8] Specs y compatibilidades de repuestos..."
+SparePart.all.each do |sp|
+  next if SparePartSpec.exists?(spare_part: sp)
+  SparePartSpec.create!(spare_part: sp, key: "Marca", value: sp.manufacturer_brand.to_s, unit: "")
+  SparePartSpec.create!(spare_part: sp, key: "Stock", value: sp.stock.to_s, unit: "unidades")
+end
+SparePart.limit(4).each_with_index do |sp, i|
+  vm = vmodels[i]
+  next unless vm
+  next if SparePartCompatibility.exists?(spare_part: sp, vehicle_model: vm)
+  SparePartCompatibility.create!(spare_part: sp, vehicle_model: vm)
+rescue => e; warn_log "Compat: #{e.message}"
+end
+log "Specs y compatibilidades listas"
 
-suppliers_data = [
-  { code: "SUP-001", name: "Caterpillar Perú S.A.", ruc: "20512345671", contact: "Juan Proveedor", phone: "01-2345678", email: "ventas@catperu.com", city: "Lima" },
-  { code: "SUP-002", name: "Komatsu Mitsui S.A.",   ruc: "20512345672", contact: "María Distribuidora", phone: "01-3456789", email: "ventas@komatsu.pe", city: "Lima" },
-  { code: "SUP-003", name: "Ferreyros S.A.A.",       ruc: "20512345673", contact: "Carlos Ferreyros", phone: "01-4567890", email: "compras@ferreyros.com", city: "Lima" },
-  { code: "SUP-004", name: "Parker Hannifin Perú",   ruc: "20512345674", contact: "Ana Parker", phone: "01-5678901", email: "ventas@parker.pe", city: "Lima" },
-  { code: "SUP-005", name: "Hidrostal S.A.",         ruc: "20512345675", contact: "Luis Hidrostal", phone: "044-234567", email: "ventas@hidrostal.com", city: "Trujillo" },
+# ── 9. SUPPLIERS ─────────────────────────────────────────────
+puts "\n📌 [9] Proveedores..."
+sup_data = [
+  ["SUP-001","Caterpillar Peru SA",  "20512345671","Juan Prov",   "01-2345678","ventas@catperu.com",  "Lima"],
+  ["SUP-002","Komatsu Mitsui SA",    "20512345672","Maria Dist",  "01-3456789","ventas@komatsu.pe",   "Lima"],
+  ["SUP-003","Ferreyros SAA",        "20512345673","Carlos Fe",   "01-4567890","compras@ferreyros.com","Lima"],
+  ["SUP-004","Parker Hannifin Peru", "20512345674","Ana Parker",  "01-5678901","ventas@parker.pe",    "Lima"],
+  ["SUP-005","Hidrostal SA",         "20512345675","Luis Hidro",  "044-234567","ventas@hidrostal.com","Trujillo"],
 ]
-
-created_sup = 0
-suppliers_data.each do |s|
-  next if Supplier.exists?(document_number: s[:ruc])
-  Supplier.create!(
-    code:            s[:code],
-    business_name:   s[:name],
-    document_type:   "RUC",
-    document_number: s[:ruc],
-    contact_name:    s[:contact],
-    phone:           s[:phone],
-    email:           s[:email],
-    address:         "Av. Industrial #{rand(100..999)}",
-    city:            s[:city],
-    status:          "active"
-  )
-  created_sup += 1
-rescue => e
-  warn_log "Supplier #{s[:name]}: #{e.message}"
+suppliers = []
+sup_data.each do |code, name, ruc, contact, phone, email, city|
+  s = Supplier.find_or_initialize_by(document_number: ruc)
+  if s.new_record?
+    s.update!(code: code, business_name: name, document_type: "RUC",
+      contact_name: contact, phone: phone, email: email,
+      address: "Av. Industrial #{rand(100..999)}", city: city, status: "active")
+  end
+  suppliers << s
+rescue => e; warn_log "Sup #{name}: #{e.message}"
 end
-log "#{created_sup} proveedores creados"
+log "#{suppliers.size} proveedores listos"
 
-# ─────────────────────────────────────────────────────────────
-# 6. CLIENTS (masivos)
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [6/9] Creando clientes masivos..."
+# ── 10. SUPPLIER PRODUCTS ────────────────────────────────────
+puts "\n📌 [10] Productos por proveedor..."
+spare_products = Product.where(product_type: "spare_part").to_a
+created = 0
+spare_products.first(5).each_with_index do |p, i|
+  sup = suppliers[i % suppliers.size]
+  next unless sup
+  next if SupplierProduct.exists?(supplier: sup, product: p)
+  SupplierProduct.create!(supplier: sup, product: p,
+    supplier_code: "#{sup.code}-#{i+1}", unit_cost: p.base_price * 0.7, lead_time_days: rand(5..30))
+  created += 1
+rescue => e; warn_log "SupProd: #{e.message}"
+end
+log "#{created} supplier_products creados"
 
-company_names = [
-  "Minera Los Andes S.A.C.", "Construcciones Pacífico S.A.", "Grupo Constructor Andino",
-  "Inversiones Sur S.R.L.", "Trans Cargo Norte S.A.", "Agregados y Materiales SAC",
-  "Empresa Minera Horizonte", "Constructora Sigma S.A.C.", "Servicios Integrales JM",
-  "Minera San Cristóbal S.A.", "Concesionaria Vial Andina", "Ingeniería y Proyectos Lima"
+# ── 11. CLIENTS (masivos) ────────────────────────────────────
+puts "\n📌 [11] Clientes masivos..."
+companies = [
+  ["Minera Los Andes SAC",     "20510000011"],
+  ["Construcciones Pacifico",  "20510000012"],
+  ["Grupo Constructor Andino", "20510000013"],
+  ["Inversiones Sur SRL",      "20510000014"],
+  ["Trans Cargo Norte SA",     "20510000015"],
+  ["Agregados Materiales SAC", "20510000016"],
+  ["Empresa Minera Horizonte", "20510000017"],
+  ["Constructora Sigma SAC",   "20510000018"],
+  ["Servicios Integrales JM",  "20510000019"],
+  ["Minera San Cristobal SA",  "20510000020"],
 ]
-
-created_cli = 0
-company_names.each_with_index do |name, i|
-  doc = "2051000#{(i + 10).to_s.rjust(4, '0')}"
-  next if Client.exists?(document_number: doc)
-  Client.create!(
-    business_name:    name,
-    document_type:    "RUC",
-    document_number:  doc,
-    contact_name:     "Contacto #{i + 1}",
-    phone:            "01-#{rand(1000000..9999999)}",
-    email:            "contacto#{i + 1}@empresa#{i + 1}.com",
-    address:          "Av. Empresarial #{rand(100..999)}, Lima",
-    city:             ["Lima", "Arequipa", "Cusco", "Trujillo", "Piura"].sample,
-    status:           "active",
-    client_category:  ["A", "B", "C"].sample,
-    first_contact_date: rand(1..365).days.ago.to_date
-  )
-  created_cli += 1
-rescue => e
-  warn_log "Client #{name}: #{e.message}"
-end
-log "#{created_cli} clientes creados"
-
-# ─────────────────────────────────────────────────────────────
-# 7. LEADS
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [7/9] Creando leads..."
-
-advisor = Advisor.first
-clients = Client.limit(10).to_a
-
-lead_statuses   = %w[new contacted qualified proposal negotiation closed_won closed_lost]
-lead_priorities = %w[low medium high urgent]
-lead_sources    = %w[web referral cold_call social_media event]
-lead_types      = %w[sale rental maintenance spare_parts]
-
-created_leads = 0
-10.times do |i|
-  client = clients[i % clients.size]
-  next unless advisor && client
-  begin
-    Lead.create!(
-      name:          "Lead #{i + 1} - #{client.business_name}",
-      email:         "lead#{i + 1}@mail.com",
-      phone:         "9#{rand(10000000..99999999)}",
-      source:        lead_sources.sample,
-      lead_type:     lead_types.sample,
-      status:        lead_statuses.sample,
-      priority:      lead_priorities.sample,
-      notes:         "Interesado en alquiler de maquinaria pesada para proyecto en zona sur.",
-      assigned_to:   advisor,
-      client:        client
-    )
-    created_leads += 1
-  rescue => e
-    warn_log "Lead #{i + 1}: #{e.message}"
+clients = []
+companies.each_with_index do |(name, ruc), i|
+  cl = Client.find_or_initialize_by(document_number: ruc)
+  if cl.new_record?
+    cl.update!(business_name: name, document_type: "RUC",
+      contact_name: "Contacto #{i+1}", phone: "01-#{rand(1000000..9999999)}",
+      email: "contacto#{i+1}@empresa#{i+1}.com",
+      address: "Av. Empresarial #{rand(100..999)}, Lima",
+      city: ["Lima","Arequipa","Cusco","Trujillo"].sample,
+      status: "active", client_category: ["A","B","C"].sample,
+      first_contact_date: rand(1..365).days.ago.to_date)
   end
+  clients << cl
+rescue => e; warn_log "Client #{name}: #{e.message}"
 end
-log "#{created_leads} leads creados"
+log "#{clients.size} clientes listos"
 
-# ─────────────────────────────────────────────────────────────
-# 8. QUOTATIONS
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [8/9] Creando cotizaciones..."
-
-advisor     = Advisor.first
-clients     = Client.limit(8).to_a
-products    = Product.where(product_type: "vehicle").limit(5).to_a
-q_types     = %w[sale rental spare_parts maintenance]
-q_statuses  = %w[draft sent approved rejected]
-
-created_q = 0
-8.times do |i|
-  client  = clients[i % clients.size]
-  product = products[i % products.size]
-  next unless advisor && client && product
-
-  begin
-    q = Quotation.create!(
-      quotation_type: q_types[i % q_types.size],
-      status:         q_statuses[i % q_statuses.size],
-      subtotal:       product.base_price,
-      tax:            (product.base_price * 0.18).round(2),
-      total:          (product.base_price * 1.18).round(2),
-      valid_until:    30.days.from_now.to_date,
-      client:         client,
-      advisor:        advisor
-    )
-    # Agregar item
-    QuotationItem.create!(
-      description:   product.name,
-      quantity:      1,
-      unit_price:    product.base_price,
-      total_price:   product.base_price,
-      item_type:     q.quotation_type,
-      quotation:     q,
-      product:       product
-    )
-    created_q += 1
-  rescue => e
-    warn_log "Quotation #{i + 1}: #{e.message}"
-  end
-  end # end if products.empty? else
+# ── 12. CLIENT CONTACTS ──────────────────────────────────────
+puts "\n📌 [12] Contactos de clientes..."
+created = 0
+clients.first(5).each do |cl|
+  next if ClientContact.exists?(client: cl)
+  ClientContact.create!(client: cl, name: "Contacto Principal #{cl.code}",
+    position: "Gerente", phone: "9#{rand(10000000..99999999)}", email: cl.email, is_primary: true)
+  created += 1
+rescue => e; warn_log "Contact: #{e.message}"
 end
-log "#{created_q} cotizaciones creadas"
+log "#{created} contactos creados"
 
-# ─────────────────────────────────────────────────────────────
-# 9. MAINTENANCES
-# ─────────────────────────────────────────────────────────────
-puts "\n📌 [9/9] Creando mantenimientos..."
-
-clients   = Client.limit(5).to_a
-mnt_types = %w[preventive corrective]
-mnt_stats = %w[pending in_progress completed]
-priorities= %w[low medium high]
-
-created_mnt = 0
-5.times do |i|
-  client = clients[i % clients.size]
-  next unless client
-  begin
-    Maintenance.create!(
-      description:      "Mantenimiento #{mnt_types[i % 2]} - Unidad #{i + 1}",
-      maintenance_type: mnt_types[i % 2],
-      priority:         priorities[i % 3],
-      status:           mnt_stats[i % 3],
-      requested_at:     rand(1..30).days.ago,
-      client:           client
-    )
-    created_mnt += 1
-  rescue => e
-    warn_log "Maintenance #{i + 1}: #{e.message}"
-  end
+# ── 13. CUSTOMER ASSETS ──────────────────────────────────────
+puts "\n📌 [13] Activos de clientes..."
+asset_types = ["excavadora","camion","compresora","generador","grua"]
+created = 0
+clients.first(5).each_with_index do |cl, i|
+  next if CustomerAsset.exists?(client: cl)
+  CustomerAsset.create!(client: cl, asset_type: asset_types[i % 5],
+    name: "#{asset_types[i%5].capitalize} #{cl.code}",
+    brand: ["CAT","Komatsu","Volvo"].sample, asset_model: "Modelo-#{i+1}",
+    serial_number: "SN-#{SecureRandom.hex(4).upcase}", year: 2018 + (i % 6),
+    description: "Activo de #{cl.business_name}", status: "active")
+  created += 1
+rescue => e; warn_log "Asset: #{e.message}"
 end
-log "#{created_mnt} mantenimientos creados"
+log "#{created} activos creados"
 
-# ─────────────────────────────────────────────────────────────
-# RESUMEN FINAL
-# ─────────────────────────────────────────────────────────────
+end # transaction
+
 puts "\n" + "=" * 60
-puts "✅ SEED COMPLETADO"
+puts "✅ PARTE 1 COMPLETA - continuando con seed_masivo_2.rb"
+puts "📊 Estado actual:"
+puts "   Users: #{User.count} | Clients: #{Client.count} | Products: #{Product.count}"
+puts "   Suppliers: #{Supplier.count} | VehicleModels: #{VehicleModel.count}"
 puts "=" * 60
-puts ""
-puts "👤 USUARIOS CREADOS (DNI = Password):"
-puts "   Admin       → admin@erpcat.com        / 10000001"
-puts "   Manager     → manager@erpcat.com      / 10000002"
-puts "   Advisor     → advisor@erpcat.com      / 10000003"
-puts "   Technician  → technician@erpcat.com   / 10000004"
-puts "   LogisticsUser → logistics@erpcat.com  / 10000005"
-puts "   Warehouseman  → warehouse@erpcat.com  / 10000006"
-puts "   Client      → cliente@erpcat.com      / 10000007"
-puts ""
-puts "📊 TOTALES EN BD:"
-puts "   Vehicle Types:    #{VehicleType.count}"
-puts "   Vehicle Models:   #{VehicleModel.count}"
-puts "   Spare Part Cats:  #{SparePartCategory.count}"
-puts "   Products:         #{Product.count}"
-puts "   Suppliers:        #{Supplier.count}"
-puts "   Clients:          #{Client.count}"
-puts "   Leads:            #{Lead.count}"
-puts "   Quotations:       #{Quotation.count}"
-puts "   Maintenances:     #{Maintenance.count}"
-puts "   Users:            #{User.count}"
-puts ""

@@ -93,6 +93,34 @@ class Api::V1::Advisor::ClientsController < ApplicationController
     end
   end
 
+  def send_credentials
+    client = Client.find(params[:id])
+    user = User.find_by(roleable: client)
+
+    generated_password = SecureRandom.alphanumeric(8)
+
+    if user
+      user.update!(password: generated_password)
+    else
+      user = User.create!(
+        email: client.email,
+        password: generated_password,
+        document_number: client.document_number,
+        roleable: client,
+        status: 'active'
+      )
+    end
+
+    # Aquí se enviaría el correo real: ClientMailer.welcome_email(user, generated_password).deliver_later
+
+    render json: { 
+      message: "Credenciales generadas y enviadas a #{client.email}",
+      temporary_password: generated_password 
+    }, status: :ok
+  rescue StandardError => e
+    render json: { message: "Error al generar credenciales", error: e.message }, status: :unprocessable_entity
+  end
+
   private
 
   def client_params
