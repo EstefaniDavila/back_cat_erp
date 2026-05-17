@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         post '/quotations',                                   to: 'quotations#create'
         put '/quotations/:id',                                to: 'quotations#update'
         put '/quotations/:id/send_for_approval',              to: 'quotations#send_for_approval'
+        put '/quotations/:id/send_to_client',                  to: 'quotations#send_to_client'
 
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'

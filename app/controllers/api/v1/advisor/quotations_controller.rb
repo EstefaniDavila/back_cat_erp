@@ -36,7 +36,7 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
-        lead_description: quo.lead&.description,
+        lead_description: quo.lead&.notes,
         has_completed_area_request: quo.area_requests.where(status: 'completed').exists?,
         pending_area_request: quo.area_requests.where(status: 'pending').exists?,
         items: quo.quotation_items.map { |item|
@@ -68,10 +68,11 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     quotation = Quotation.find(params[:id])
     
     render json: {
+      quotation: {
         id: quotation.id,
         **quotation.attributes.symbolize_keys,
         client_name: quotation.client.business_name,
-        lead_description: quotation.lead&.description,
+        lead_description: quotation.lead&.notes,
         has_completed_area_request: quotation.area_requests.where(status: 'completed').exists?,
         pending_area_request: quotation.area_requests.where(status: 'pending').exists?,
         items: quotation.quotation_items,
@@ -104,11 +105,29 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     end
   end
 
-  # Acción para que el asesor envíe a revisión al manager
+  # El asesor envía la cotización al cliente para su revisión
+  def send_to_client
+    quotation = Quotation.find(params[:id])
+
+    # Verificar que el área ya completó la revisión (si es alquiler/mantenimiento)
+    if (quotation.quotation_type == 'rental' || quotation.quotation_type == 'maintenance') &&
+       !quotation.area_requests.where(status: 'completed').exists?
+      render json: { message: "El área especializada aún no ha completado la revisión de esta cotización." }, status: :unprocessable_entity
+      return
+    end
+
+    if quotation.update(status: 'sent')
+      render json: { message: "Cotización enviada al cliente exitosamente", quotation: quotation }, status: :ok
+    else
+      render json: { message: "Error al enviar al cliente", errors: quotation.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # El asesor envía a revisión del manager (después que el cliente aprobó)
   def send_for_approval
     quotation = Quotation.find(params[:id])
 
-    if (quotation.quotation_type == 'rental' || quotation.quotation_type == 'maintenance') && 
+    if (quotation.quotation_type == 'rental' || quotation.quotation_type == 'maintenance') &&
        !quotation.area_requests.where(status: 'completed').exists?
       render json: { message: "Esta cotización debe ser revisada y completada primero por el área especializada de Alquiler/Mantenimiento." }, status: :unprocessable_entity
       return

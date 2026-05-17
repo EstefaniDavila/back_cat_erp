@@ -102,9 +102,12 @@ class Api::V1::Admin::AreaRequestsController < ApplicationController
     full_reply_notes = "⚙️ REVISIÓN DEL ÁREA (#{area_request.area}):\n• Estado: #{machine_status}#{extra_details}\n• Observaciones: #{notes_text}"
 
     ActiveRecord::Base.transaction do
+      unit_price_val = params[:area_request][:unit_price].present? ? params[:area_request][:unit_price].to_f : nil
       area_request.update!(
         notes: full_reply_notes, 
         status: 'completed', 
+        machine_ready: params[:area_request][:machine_ready] == 'true' || params[:area_request][:machine_ready] == true,
+        unit_price: unit_price_val,
         reviewed_by_id: current_user_id,
         reviewed_at: Time.current
       )
