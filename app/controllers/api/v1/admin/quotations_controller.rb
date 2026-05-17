@@ -30,11 +30,16 @@ class Api::V1::Admin::QuotationsController < ApplicationController
     quotations = quotations.page(page).per(page_size)
 
     quotations_data = quotations.map do |quo|
+      advisor_name = if quo.advisor.nil? || quo.advisor.email == "sistema@erpcat.com"
+                       "Sin asignar"
+                     else
+                       "#{quo.advisor.first_name} #{quo.advisor.last_name}"
+                     end
       {
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
-        advisor_name: "#{quo.advisor.first_name} #{quo.advisor.last_name}",
+        advisor_name: advisor_name,
         created_at: quo.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: quo.updated_at.strftime("%d/%m/%Y %H:%M")
       }
@@ -52,12 +57,18 @@ class Api::V1::Admin::QuotationsController < ApplicationController
   def show
     quotation = Quotation.find_by!(id: params[:id])
     
+    advisor_name = if quotation.advisor.nil? || quotation.advisor.email == "sistema@erpcat.com"
+                     "Sin asignar"
+                   else
+                     "#{quotation.advisor.first_name} #{quotation.advisor.last_name}"
+                   end
+
     render json: {
       quotation: {
         id: quotation.id,
         **quotation.attributes.symbolize_keys,
         client_name: quotation.client.business_name,
-        advisor_name: "#{quotation.advisor.first_name} #{quotation.advisor.last_name}",
+        advisor_name: advisor_name,
         items: quotation.quotation_items,
         created_at: quotation.created_at.strftime("%d/%m/%Y %H:%M"),
       },

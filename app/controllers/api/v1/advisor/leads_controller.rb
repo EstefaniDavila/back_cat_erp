@@ -9,7 +9,8 @@ class Api::V1::Advisor::LeadsController < ApplicationController
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
 
-    leads = Lead.where(assigned_to_id: current_advisor_id).where.not(status: ['new', 'pending'])
+    client_ids = ClientAdvisor.where(advisor_id: current_advisor_id).pluck(:client_id)
+    leads = Lead.where(assigned_to_id: current_advisor_id, client_id: client_ids)
 
     if params[:priority].present?
       leads = leads.where(priority: params[:priority])

@@ -10,9 +10,8 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
     
-    # El asesor ve las cotizaciones que tiene asignadas o las que están sin asignar/por asignar
-    por_asignar_id = Advisor.find_by(email: "sistema@erpcat.com")&.id
-    quotations = Quotation.where(advisor_id: [current_advisor_id, nil, por_asignar_id].compact).includes(:client, :quotation_items)
+    # El asesor ve las cotizaciones que tiene asignadas
+    quotations = Quotation.where(advisor_id: current_advisor_id).includes(:client, :quotation_items)
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields(fields, keywords, "cont")

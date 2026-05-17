@@ -23,6 +23,22 @@ class User < ApplicationRecord
     { user: self.as_json }
   end
 
+  def full_name
+    return "Sistema" if roleable.nil?
+
+    if roleable.respond_to?(:full_name) && roleable.full_name.present?
+      roleable.full_name
+    elsif roleable.respond_to?(:first_name) && roleable.respond_to?(:last_name)
+      "#{roleable.first_name} #{roleable.last_name}".strip
+    elsif roleable.respond_to?(:business_name) && roleable.business_name.present?
+      roleable.business_name
+    elsif roleable.respond_to?(:contact_name) && roleable.contact_name.present?
+      roleable.contact_name
+    else
+      email
+    end
+  end
+
   
   private
 

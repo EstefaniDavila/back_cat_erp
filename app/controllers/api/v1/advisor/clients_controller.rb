@@ -5,9 +5,11 @@ class Api::V1::Advisor::ClientsController < ApplicationController
   # before_action :authenticate_and_set_user # (Descomenta cuando tengas la auth real)
 
   def index
+    current_advisor_id = params[:advisor_id] || 1
     keywords = params[:search_params] || ""
     fields = params[:search_fields]&.split(",") || []
-    clients = Client.all
+    
+    clients = Client.joins(:client_advisors).where(client_advisors: { advisor_id: current_advisor_id })
 
     if fields.present? && keywords.present?
       search_conditions = combine_search_fields(fields, keywords, "cont")

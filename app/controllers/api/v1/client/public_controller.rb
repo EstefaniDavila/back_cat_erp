@@ -41,7 +41,11 @@ class Api::V1::Client::PublicController < ApplicationController
       default_advisor = Advisor.find_or_initialize_by(email: "sistema@erpcat.com") do |a|
         a.first_name = "Por"
         a.last_name = "Asignar"
+        a.full_name = "Por Asignar"
         a.document_number = "00000000"
+        a.document_type = "DNI"
+        a.code = "ADV-0000"
+        a.status = "active"
       end
       default_advisor.save(validate: false) if default_advisor.new_record?
 
@@ -68,7 +72,7 @@ class Api::V1::Client::PublicController < ApplicationController
         subtotal: params[:subtotal] || 0,
         tax: params[:tax] || 0,
         total: params[:total] || 0,
-        advisor_id: default_advisor.id
+        advisor_id: nil
       )
 
       # 4. Procesar los Items del Carrito

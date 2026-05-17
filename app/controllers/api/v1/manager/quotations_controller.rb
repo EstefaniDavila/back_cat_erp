@@ -51,12 +51,18 @@ class Api::V1::Manager::QuotationsController < ApplicationController
   def show
     quotation = Quotation.find_by!(id: params[:id])
     
+    advisor_name = if quotation.advisor.nil? || quotation.advisor.email == "sistema@erpcat.com"
+                     "Sin asignar"
+                   else
+                     "#{quotation.advisor.first_name} #{quotation.advisor.last_name}"
+                   end
+
     render json: {
       quotation: {
         id: quotation.id,
         **quotation.attributes.symbolize_keys,
         client_name: quotation.client.business_name,
-        advisor_name: "#{quotation.advisor.first_name} #{quotation.advisor.last_name}",
+        advisor_name: advisor_name,
         items: quotation.quotation_items,
         created_at: quotation.created_at.strftime("%d/%m/%Y %H:%M"),
       },
