@@ -51,7 +51,8 @@ module Users
           expire_at: response.headers["Expire-At"],
           user: {
             **resource.attributes.symbolize_keys,
-            full_name: resource.roleable.try(:full_name) || resource.roleable.try(:business_name) || resource.roleable.try(:contact_name) || "Usuario"
+            full_name: resource.roleable&.full_name,
+            roleable: resource.roleable&.as_json
           },
           # rol: resource.roleable_id,
           rol: resource.roleable_type
