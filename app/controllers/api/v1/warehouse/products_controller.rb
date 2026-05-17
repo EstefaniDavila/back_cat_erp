@@ -3,7 +3,6 @@ module Api
   module V1
     module Warehouse
       class ProductsController < ApplicationController
-        skip_before_action :verify_authenticity_token
         before_action :set_product, only: [:update_status]
         
         # GET /api/v1/warehouse/products

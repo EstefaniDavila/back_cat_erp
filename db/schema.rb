@@ -405,7 +405,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_17_055900) do
     t.datetime "approved_at"
     t.datetime "rejected_at"
     t.uuid "client_id", null: false
-    t.uuid "advisor_id"
+    t.uuid "advisor_id", null: false
     t.uuid "lead_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -620,6 +620,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_17_055900) do
   end
 
   create_table "vehicles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "product_id", null: false
+    t.uuid "vehicle_model_id", null: false
     t.string "serial"
     t.integer "manufacture_year"
     t.decimal "hours_used", precision: 10, scale: 2
@@ -627,8 +629,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_17_055900) do
     t.decimal "price_per_hour", precision: 12, scale: 2
     t.decimal "price_per_day", precision: 12, scale: 2
     t.string "location"
-    t.uuid "product_id", null: false
-    t.uuid "vehicle_model_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_vehicles_on_product_id"

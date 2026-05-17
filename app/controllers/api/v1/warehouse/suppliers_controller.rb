@@ -1,9 +1,7 @@
 module Api
   module V1
     module Warehouse
-      class SuppliersController < ApplicationController
-        skip_before_action :verify_authenticity_token
-        
+      class SuppliersController < ApplicationController        
         # GET /api/v1/Warehouse/suppliers
         def index
           suppliers = Supplier.all.order(:business_name)
