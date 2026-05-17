@@ -3,6 +3,20 @@ class Quotation < ApplicationRecord
   include Sanitizable
   has_paper_trail
 
+  before_validation :generate_unique_code_custom, on: :create, if: -> { code.blank? }
+
+  def generate_unique_code_custom
+    prefix = "COT"
+    year = Time.current.year
+    last_quotation = Quotation.unscoped.where("code LIKE ?", "#{prefix}-#{year}-%").order(code: :desc).first
+    next_number = 1
+    if last_quotation
+      last_num = last_quotation.code.split('-').last.to_i
+      next_number = last_num + 1
+    end
+    self.code = "#{prefix}-#{year}-#{next_number.to_s.rjust(5, '0')}"
+  end
+
   belongs_to :client
   belongs_to :advisor, optional: true
   belongs_to :lead, optional: true
