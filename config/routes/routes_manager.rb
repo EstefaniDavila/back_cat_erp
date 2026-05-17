@@ -32,6 +32,7 @@ Rails.application.routes.draw do
         post '/maintenances',                                 to: 'maintenances#create'
         put '/maintenances/:id',                              to: 'maintenances#update'
         delete '/maintenances/:id',                           to: 'maintenances#destroy'
+        patch '/maintenances/update_status/:id',              to: 'maintenances#update_status'
 
         ####################### WORK ORDERS ######################
         get '/work_orders',                                   to: 'work_orders#index'
@@ -39,7 +40,8 @@ Rails.application.routes.draw do
         put '/work_orders/:id',                               to: 'work_orders#update'
         delete '/work_orders/:id',                            to: 'work_orders#destroy'
         get '/work_orders/maintenance/:maintenance_id',       to: 'work_orders#index_by_maintenance'
-        get '/work_orders/technician/:technician_id',        to: 'work_orders#index_by_technician'
+        get '/work_orders/technician/:technician_id',         to: 'work_orders#index_by_technician'
+        patch '/work_orders/update_diagnosis/:id',            to: 'work_orders#update_diagnosis'
 
         ####################### WORK ORDER ACTIONS ######################
         get '/work_order_actions',                            to: 'work_order_actions#index'

@@ -84,7 +84,33 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
 
     render json: {
       work_orders: work_orders.as_json(
-        include: [:maintenance]
+        include: {
+          maintenance: {
+            only: [
+              :id,
+              :code,
+              :description,
+              :maintenance_type,
+              :priority,
+              :scheduled_at,
+              :quotation_id,
+              :status
+            ],
+            include: {
+              client: {
+                only: [:id, :business_name]
+              },
+              enterprise_vehicle: {
+                only: [:id, :serial, :manufacture_year, :hours_used],
+                include: {
+                  product: {
+                    only: [:id, :name]
+                  }
+                }
+              }
+            }
+          }
+        }
       ),
       current_page: work_orders.current_page,
       total_pages: work_orders.total_pages,
@@ -124,10 +150,24 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
     end
   end
 
+  def update_diagnosis
+    work_order = WorkOrder.find(params[:id])
+    if work_order.update(diagnosis_params)
+      render json: {message: "Diagnóstico actualizado con éxito", work_order: work_order}, status: :ok
+    else
+      render json: {
+        message: "Ocurrió un error al actualizar el diagnóstico", errors: work_order.errors.full_messages}, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def work_order_params
     params.require(:work_order).permit(:diagnosis, :diagnosis_result, :work_order_type, :status, :scheduled_date, :closed_date, :maintenance_id, :assigned_to_id)
+  end
+
+  def diagnosis_params
+    params.require(:work_order).permit(:diagnosis, :diagnosis_result)
   end
 
 end
