@@ -49,6 +49,17 @@ class Api::V1::Client::PublicController < ApplicationController
       end
       default_advisor.save(validate: false) if default_advisor.new_record?
 
+      # Construir notas detalladas de alquiler/servicio si están presentes
+      notes_content = []
+      if params[:type] == 'rental' || params[:type] == 'maintenance' || params[:type] == 'Alquiler' || params[:type] == 'Mantenimiento'
+        notes_content << "📅 PLANIFICACIÓN:"
+        notes_content << "• Fecha de inicio: #{params[:start_date] || params[:rental_date] || params[:service_date] || 'No especificada'}"
+        notes_content << "• Duración: #{params[:duration] || params[:rental_days] || 'No especificada'}"
+        notes_content << ""
+      end
+      notes_content << params[:notes] if params[:notes].present?
+      full_notes = notes_content.join("\n")
+
       lead = Lead.create!(
         client: client,
         name: "Cotización Web - #{params[:type]}",
@@ -56,7 +67,7 @@ class Api::V1::Client::PublicController < ApplicationController
         phone: client.phone,
         source: 'landing_page',
         lead_type: params[:type],
-        notes: params[:notes],
+        notes: full_notes,
         status: 'new',
         priority: 'NC',
         assigned_to_id: default_advisor.id
@@ -75,17 +86,32 @@ class Api::V1::Client::PublicController < ApplicationController
         advisor_id: nil
       )
 
-      # 4. Procesar los Items del Carrito
+      # 4. Procesar los Items del Carrito o Producto Individual
       if params[:items].present? && params[:items].is_a?(Array)
         params[:items].each do |item|
+          item_hash = item.respond_to?(:to_unsafe_h) ? item.to_unsafe_h.symbolize_keys : item.to_h.symbolize_keys
           QuotationItem.create!(
             quotation_id: quotation.id,
-            product_id: item[:product_id],
-            item_type: item[:item_type] || 'product',
-            description: item[:description] || 'Producto Web',
-            quantity: item[:quantity] || 1,
-            unit_price: item[:unit_price] || 0,
-            total_price: item[:total_price] || 0
+            product_id: item_hash[:product_id],
+            item_type: item_hash[:item_type] || 'product',
+            description: item_hash[:description] || 'Producto Web',
+            quantity: item_hash[:quantity] || 1,
+            unit_price: item_hash[:unit_price] || 0,
+            total_price: item_hash[:total_price] || 0
+          )
+        end
+      else
+        target_prod_id = params[:product_id] || params[:machine_id] || params[:product]
+        if target_prod_id.present?
+          product = Product.find_by(id: target_prod_id) || Product.find_by(code: target_prod_id)
+          QuotationItem.create!(
+            quotation_id: quotation.id,
+            product_id: product&.id,
+            item_type: 'product',
+            description: product&.name || params[:product_name] || params[:machine_name] || "Máquina seleccionada: #{target_prod_id}",
+            quantity: 1,
+            unit_price: product&.base_price || 0,
+            total_price: product&.base_price || 0
           )
         end
       end

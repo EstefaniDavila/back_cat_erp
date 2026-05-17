@@ -25,6 +25,12 @@ unless Manager.exists?(document_number: "10000002")
   log "Manager → manager@erpcat.com / 10000002"
 else; warn_log "Manager ya existe"; end
 
+unless Manager.exists?(document_number: "10000012")
+  Manager.create!(first_name: "Juan", last_name: "Gerente", full_name: "Juan Gerente",
+    email: "operationmanager@erpcat.com", document_number: "10000012", document_type: "DNI", area: "Operations")
+  log "Manager → operationmanager@erpcat.com / 100000012"
+else; warn_log "Manager ya existe"; end
+
 unless Advisor.exists?(document_number: "10000003")
   Advisor.create!(first_name: "Luis", last_name: "Asesor", full_name: "Luis Asesor",
     email: "advisor@erpcat.com", document_number: "10000003", document_type: "DNI",

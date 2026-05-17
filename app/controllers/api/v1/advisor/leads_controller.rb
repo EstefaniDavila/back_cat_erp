@@ -102,7 +102,7 @@ class Api::V1::Advisor::LeadsController < ApplicationController
         status: :ok
       }
     else
-      render json: { error: "Lead no encontrado o no tienes permiso para verlo" }, status: :not_found
+      render json: { error: "Lead no encontrado o no tienes permiso para verlo" }, status: :not_found 
     end
   end
 

@@ -9,6 +9,7 @@ class Api::V1::Client::PortalController < ApplicationController
     current_client_id = params[:client_id] || 1 # En el futuro será current_user.roleable_id
 
     quotations = Quotation.where(client_id: current_client_id)
+                          .where.not(status: ['draft', 'pending_area_review', 'pending_approval'])
                           .includes(:quotation_items)
                           .order(created_at: :desc)
     

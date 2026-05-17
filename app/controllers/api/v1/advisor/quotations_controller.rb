@@ -36,6 +36,9 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
         id: quo.id,
         **quo.attributes.symbolize_keys,
         client_name: quo.client.business_name,
+        lead_description: quo.lead&.description,
+        has_completed_area_request: quo.area_requests.where(status: 'completed').exists?,
+        pending_area_request: quo.area_requests.where(status: 'pending').exists?,
         items: quo.quotation_items.map { |item|
           {
             id: item.id,
@@ -65,10 +68,12 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
     quotation = Quotation.find(params[:id])
     
     render json: {
-      quotation: {
         id: quotation.id,
         **quotation.attributes.symbolize_keys,
         client_name: quotation.client.business_name,
+        lead_description: quotation.lead&.description,
+        has_completed_area_request: quotation.area_requests.where(status: 'completed').exists?,
+        pending_area_request: quotation.area_requests.where(status: 'pending').exists?,
         items: quotation.quotation_items,
         created_at: quotation.created_at.strftime("%d/%m/%Y %H:%M"),
       },
@@ -102,6 +107,12 @@ class Api::V1::Advisor::QuotationsController < ApplicationController
   # Acción para que el asesor envíe a revisión al manager
   def send_for_approval
     quotation = Quotation.find(params[:id])
+
+    if (quotation.quotation_type == 'rental' || quotation.quotation_type == 'maintenance') && 
+       !quotation.area_requests.where(status: 'completed').exists?
+      render json: { message: "Esta cotización debe ser revisada y completada primero por el área especializada de Alquiler/Mantenimiento." }, status: :unprocessable_entity
+      return
+    end
 
     if quotation.update(status: 'pending_approval')
       render json: { message: "Enviado a revisión del Gerente", quotation: quotation }, status: :ok

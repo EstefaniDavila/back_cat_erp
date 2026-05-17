@@ -38,6 +38,7 @@ class Api::V1::Advisor::AreaRequestsController < ApplicationController
         id: req.id,
         **req.attributes.symbolize_keys,
         quotation_code: req.quotation.code,
+        quotation_items: req.quotation.quotation_items.map { |i| { description: i.description, quantity: i.quantity } },
         creator_email: req.created_by&.email,
         creator_role: req.created_by&.roleable_type,
         reviewer_email: req.reviewed_by&.email,
@@ -59,17 +60,20 @@ class Api::V1::Advisor::AreaRequestsController < ApplicationController
     current_user_id = params[:user_id] || 1 
     current_advisor_id = params[:advisor_id] || 1 
     
-    # Verificamos que la cotización sea de él
-    quotation = Quotation.find_by!(id: params[:area_request][:quotation_id], advisor_id: current_advisor_id)
+    # Verificamos que la cotización exista
+    quotation = Quotation.find(params[:area_request][:quotation_id])
 
     area_request = AreaRequest.new(area_request_params)
     area_request.created_by_id = current_user_id
     area_request.status = 'pending'
 
-    if area_request.save
-      render json: { message: "Solicitud enviada al área de #{area_request.area}", area_request: area_request }, status: :ok
-    else
-      render json: { message: "Error al crear la solicitud", errors: area_request.errors.full_messages }, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      if area_request.save
+        quotation.update!(status: 'pending_area_review')
+        render json: { message: "Solicitud enviada al área de #{area_request.area}", area_request: area_request }, status: :ok
+      else
+        render json: { message: "Error al crear la solicitud", errors: area_request.errors.full_messages }, status: :unprocessable_entity
+      end
     end
   end
 
