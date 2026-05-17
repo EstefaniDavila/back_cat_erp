@@ -2,6 +2,7 @@ module Api
   module V1
     module Admin
       class SparePartCategoriesController < ApplicationController
+        protect_from_forgery with: :null_session
         before_action :set_category, only: [:show, :update, :destroy]
 
         def index

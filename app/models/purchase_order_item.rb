@@ -5,16 +5,18 @@ class PurchaseOrderItem < ApplicationRecord
   belongs_to :purchase_order
   belongs_to :product
 
+  # 🔥 helper para obtener spare_part
+  def spare_part
+    product&.spare_part
+  end
+
   before_save :calculate_total_cost
-
-  # Validaciones
-  validates :quantity, presence: true, numericality: { greater_than: 0 }
-  validates :unit_cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :product_id, uniqueness: { scope: :purchase_order_id, message: "already added to this order" }
-
-  # Callbacks
   before_validation :calculate_total_cost, on: [:create, :update]
   before_save :set_received_quantity_default
+
+  validates :quantity, presence: true, numericality: { greater_than: 0 }
+  validates :unit_cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :product_id, uniqueness: { scope: :purchase_order_id }
 
   private
 
@@ -22,8 +24,7 @@ class PurchaseOrderItem < ApplicationRecord
     self.total_cost = quantity.to_d * unit_cost.to_d if quantity.present? && unit_cost.present?
   end
 
-  def set_received_quantity_default  
+  def set_received_quantity_default
     self.received_quantity ||= 0
   end
-
 end

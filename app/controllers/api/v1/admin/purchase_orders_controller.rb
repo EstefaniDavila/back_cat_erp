@@ -5,7 +5,7 @@ module Api
     module Admin
       class PurchaseOrdersController < ApplicationController
         protect_from_forgery with: :null_session
-        before_action :set_purchase_order, only: [:show, :update, :destroy, :receive, :cancel]
+        before_action :set_purchase_order, only: [:show, :update, :destroy, :receive, :cancel, :download_guide]
 
         skip_before_action :verify_authenticity_token
 
@@ -84,6 +84,35 @@ module Api
           render json: @purchase_orders, status: :ok
         end
 
+        def download_guide
+          render json: {
+            id: @purchase_order.id,
+            code: @purchase_order.code,
+            generated_at: Time.current,
+            supplier: {
+              business_name: @purchase_order.supplier&.business_name,
+              document_number: @purchase_order.supplier&.document_number,
+              phone: @purchase_order.supplier&.phone,
+              address: @purchase_order.supplier&.address,
+              email: @purchase_order.supplier&.email
+            },
+            expected_date: @purchase_order.expected_date,
+            received_at: @purchase_order.received_at,
+            status: @purchase_order.status,
+            notes: @purchase_order.notes,
+            items: @purchase_order.purchase_order_items.map do |item|
+              {
+                product_code: item.product&.code,
+                product_name: item.product&.name,
+                quantity: item.quantity,
+                unit_cost: item.unit_cost.to_f,
+                subtotal: (item.quantity * item.unit_cost).to_f
+              }
+            end,
+            total: @purchase_order.total.to_f
+          }, status: :ok
+        end
+
         private
 
         def set_purchase_order
@@ -94,9 +123,11 @@ module Api
 
         def purchase_order_params
           params.require(:purchase_order).permit(
-            :supplier_id, :requested_by_id, :expected_date, :notes, :status,
+            :supplier_id, :requested_by_id, :expected_date, :received_at,:notes, :status,
             purchase_order_items_attributes: [:id, :product_id, :quantity, :unit_cost, :_destroy,]
           )
+
+          
         end
       end
     end
