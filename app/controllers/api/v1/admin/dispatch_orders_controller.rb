@@ -8,11 +8,16 @@ module Api
         skip_before_action :verify_authenticity_token, raise: false
 
         # GET /api/v1/admin/dispatch_orders
-        def index
-          @dispatch_orders = DispatchOrder.includes(:prepared_by, :sales_order, :rental, :dispatch_items)
-                                          .all.order(created_at: :desc)
-          render json: @dispatch_orders, status: :ok
-        end
+       def index
+        @dispatch_orders = DispatchOrder.includes(:prepared_by, :sales_order, :rental, :dispatch_items)
+                                        .all.order(created_at: :desc)
+        
+        render json: @dispatch_orders.as_json(
+          include: {
+            prepared_by: { only: [:id, :full_name, :email] }
+          }
+        ), status: :ok
+       end
 
         # GET /api/v1/admin/dispatch_orders/select
         def index_select
