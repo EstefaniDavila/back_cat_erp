@@ -32,6 +32,8 @@ test:
 production:
   <<: *default
   database: erp_cat_production
+  host: localhost
+  port: 5432
   username: backend
   password: <%= ENV["BACKEND_DATABASE_PASSWORD"] %>
 
