@@ -4,7 +4,7 @@
         class DispatchItemsController < ApplicationController
           protect_from_forgery with: :null_session
           before_action :set_item, only: [:show, :update, :destroy, :check]
-          skip_before_action :verify_authenticity_token
+          skip_before_action :verify_authenticity_token, raise: false
 
           # GET /api/v1/admin/dispatch_items
           def index

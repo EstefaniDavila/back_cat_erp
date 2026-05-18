@@ -4,7 +4,7 @@ module Api
     module Admin
       class LogisticsUsersController < ApplicationController
         protect_from_forgery with: :null_session
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
         before_action :set_logistics_user, only: [:show, :update, :destroy]
 
         # GET /api/v1/admin/logistics_users

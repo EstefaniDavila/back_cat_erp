@@ -4,7 +4,7 @@ module Api
       class PurchaseOrderItemsController < ApplicationController
         protect_from_forgery with: :null_session
         before_action :set_item, only: [:show, :update, :destroy]
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
         # GET /api/v1/LogisticUser/purchase_order_items
         def index

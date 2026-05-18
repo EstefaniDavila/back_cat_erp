@@ -6,7 +6,7 @@ module Api
         protect_from_forgery with: :null_session
         before_action :set_purchase_order, only: [:show, :receive, :cancel]
 
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
         # GET /api/v1/warehouse/purchase_orders
 
