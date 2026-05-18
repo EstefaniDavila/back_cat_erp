@@ -53,6 +53,9 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
         include: {
           assigned_to: {
             only: [:id, :full_name]
+          },
+          work_order_actions: {
+            only: [:id, :action, :description, :evidence]
           }
         }
       ),

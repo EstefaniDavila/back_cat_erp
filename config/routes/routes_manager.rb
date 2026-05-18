@@ -64,6 +64,12 @@ Rails.application.routes.draw do
         # post '/technicians',                                  to: 'technicians#create'
         # put '/technicians/:id',                               to: 'technicians#update'
         # delete '/technicians/:id',                            to: 'technicians#destroy'
+        
+        ####################### RENTALS ######################
+        get '/rentals',                                   to: 'rentals#index'
+        post '/rentals',                                  to: 'rentals#create'
+        put '/rentals/:id',                               to: 'rentals#update'
+        delete '/rentals/:id',                            to: 'rentals#destroy'
       end
     end
   end
