@@ -1,6 +1,6 @@
 class Api::V1::Manager::MaintenancesController < ApplicationController
   include SearchHelper
-  skip_before_action :verify_authenticity_token
+  protect_from_forgery with: :null_session
 
   def index
     keywords = params[:search_params] || ""
@@ -66,10 +66,24 @@ class Api::V1::Manager::MaintenancesController < ApplicationController
     end
   end
 
+  def update_status
+    maintenance = Maintenance.find(params[:id])
+
+    if maintenance.update(status_params)
+      render json: { message: "Estado actualizado con éxito", maintenance: maintenance }, status: :ok
+    else
+      render json: { message: "Ocurrió un error al actualizar el estado", errors: maintenance.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def maintenance_params
     params.require(:maintenance).permit(:description, :maintenance_type, :priority, :status, :requested_at, :scheduled_at, :completed_at, :client_id, :customer_asset_id, :enterprise_vehicle_id, :quotation_id)
+  end
+
+  def status_params
+    params.require(:maintenance).permit(:status)
   end
 
 end
