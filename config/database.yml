@@ -14,8 +14,8 @@ development:
   database: erp_cat
   host: localhost
   port: 5432
-  # username: egusquiza31
-  # password: "123456"
+  username: egusquiza31
+  password: "123456"
   username: <%= ENV["DATA_BASE_USER_NAME"] %>
   password: <%= ENV["DATA_BASE_USER_PASSWORD"] %>
 
