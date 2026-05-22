@@ -10,8 +10,8 @@ namespace :db do
     db_pass = db_config[:password]
     db_host = db_config[:host] || 'localhost'
 
-    timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
-    backup_file = backup_dir.join("#{db_name}_#{timestamp}.sql.gz")
+    current_date = Time.now.strftime('%Y-%m-%d')
+    backup_file = backup_dir.join("#{db_name}_#{current_date}.sql.gz")
 
     puts " Iniciando backup de #{db_name}..."
 
@@ -21,12 +21,11 @@ namespace :db do
     if system(command)
       puts "✅ Backup completado exitosamente: #{backup_file}"
       
-      # Limpieza: Borrar backups de más de 7 días
+      # Limpieza: Borrar cualquier archivo antiguo de ejecuciones anteriores
       Dir.glob(backup_dir.join('*.sql.gz')).each do |file|
-        if File.mtime(file) < 7.days.ago
-          File.delete(file)
-          puts " Backup antiguo eliminado: #{File.basename(file)}"
-        end
+        next if File.basename(file) == "#{db_name}_#{current_date}.sql.gz"
+        File.delete(file) rescue nil
+        puts " Backup antiguo eliminado: #{File.basename(file)}"
       end
     else
       puts " Error al generar el backup."

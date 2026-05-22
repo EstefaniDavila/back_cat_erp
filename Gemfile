@@ -58,6 +58,7 @@ group :development do
   gem "capistrano-rails", "~> 1.6", ">= 1.6.2", require: false
   gem "capistrano-passenger", "~> 0.2", ">= 0.2.1", require: false
   gem "capistrano-rbenv", "~> 2.2", require: false
+  gem "capistrano-sidekiq", require: false
   gem "ed25519", ">= 1.2", "< 2.0", require: false
   gem "bcrypt_pbkdf", ">= 1.0", "< 2.0", require: false
   gem "rufo"

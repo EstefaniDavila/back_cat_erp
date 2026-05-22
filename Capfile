@@ -6,6 +6,9 @@ require "capistrano/bundler"
 require "capistrano/rails/migrations"
 require "capistrano/passenger"
 require "capistrano/rbenv"
+require "capistrano/sidekiq"
+install_plugin Capistrano::Sidekiq
+install_plugin Capistrano::Sidekiq::Systemd
 
 set :rbenv_type, :user
 set :rbenv_ruby, "3.3.3"
