@@ -48,12 +48,26 @@ class Api::V1::Admin::ClientsController < ApplicationController
   def show
     client = Client.find_by(code: params[:code]) || Client.find_by(id: params[:id])
     if client
+      quotations = client.quotations.order(created_at: :desc).map do |q|
+        {
+          id: q.id,
+          code: q.code,
+          quotation_type: q.quotation_type,
+          item_description: q.quotation_items.first&.description || "Cotización general",
+          advisor: q.advisor&.full_name || "Sin asesor",
+          amount: q.total || 0,
+          date: q.created_at.strftime("%Y-%m-%d"),
+          status: q.status
+        }
+      end
+
       render json: {
         client: {
           id: client.id,
           **client.attributes.symbolize_keys,
           created_at: client.created_at.strftime("%d/%m/%Y %H:%M"),
         },
+        quotations: quotations,
         status: :ok
       }
     else
