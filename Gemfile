@@ -9,7 +9,7 @@ gem "puma", "~> 5.0"
 gem "redis", "~> 4.0"
 gem "pg", "~> 1.1"
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
-gem "dotenv-rails", :groups => [:development, :test, :production]
+gem "dotenv-rails", :groups => [:development, :test, :production, :replica]
 gem "bootsnap", require: false
 gem "sprockets-rails"
 gem "stimulus-rails"
@@ -49,8 +49,7 @@ gem 'sidekiq-cron'
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
-  
-gem 'dotenv-rails', groups: [:development, :test, :replica]
+
 
 group :development do
   gem "web-console"

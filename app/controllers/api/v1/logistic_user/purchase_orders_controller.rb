@@ -3,7 +3,7 @@ module Api
     module LogisticUser
       class PurchaseOrdersController < ApplicationController
         protect_from_forgery with: :null_session
-        skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token, raise: false
 
         def index
           @purchase_orders = PurchaseOrder.includes(:supplier, :requested_by, :purchase_order_items)
