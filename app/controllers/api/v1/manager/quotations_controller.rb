@@ -131,6 +131,23 @@ class Api::V1::Manager::QuotationsController < ApplicationController
           client_id:    quo.client_id,
           advisor_id:   quo.advisor_id
         )
+        
+        dispatch_order = DispatchOrder.create!(
+          sales_order_id: order.id,
+          status: 'pending',
+          prepared_by_id: current_user&.id || User.first&.id
+        )
+        
+        quo.quotation_items.each do |item|
+          next unless item.product_id.present?
+          DispatchItem.create!(
+            dispatch_order_id: dispatch_order.id,
+            product_id: item.product_id,
+            quantity: item.quantity || 1,
+            checked: false
+          )
+        end
+
         { model: 'SalesOrder', code: order.code, area: 'logistics', area_label: 'Logística', record: order }
 
       when 'rental'
@@ -170,6 +187,23 @@ class Api::V1::Manager::QuotationsController < ApplicationController
           client_id:    quo.client_id,
           advisor_id:   quo.advisor_id
         )
+
+        dispatch_order = DispatchOrder.create!(
+          sales_order_id: order.id,
+          status: 'pending',
+          prepared_by_id: current_user&.id || User.first&.id
+        )
+        
+        quo.quotation_items.each do |item|
+          next unless item.product_id.present?
+          DispatchItem.create!(
+            dispatch_order_id: dispatch_order.id,
+            product_id: item.product_id,
+            quantity: item.quantity || 1,
+            checked: false
+          )
+        end
+
         { model: 'SalesOrder', code: order.code, area: 'logistics', area_label: 'Logística', record: order }
       end
 
