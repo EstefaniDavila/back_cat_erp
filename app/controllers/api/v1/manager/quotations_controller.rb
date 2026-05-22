@@ -135,7 +135,7 @@ class Api::V1::Manager::QuotationsController < ApplicationController
         dispatch_order = DispatchOrder.create!(
           sales_order_id: order.id,
           status: 'pending',
-          prepared_by_id: current_user&.id || User.first&.id
+          prepared_by_id: quo.advisor&.user&.id || User.first&.id
         )
         
         quo.quotation_items.each do |item|
