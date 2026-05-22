@@ -14,3 +14,7 @@ set :keep_releases, 5
 
 set :rbenv_type, :user
 set :rbenv_ruby, "3.3.3"
+
+# Configuración de Sidekiq Systemd
+set :pty, false
+set :sidekiq_service_unit_user, :system
