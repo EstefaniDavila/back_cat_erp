@@ -1,12 +1,12 @@
 class Api::V1::Admin::SalesOrdersController < ApplicationController
   def index
-    sales_orders = SalesOrder.includes(:client, :advisor, :quotation).order(created_at: :desc)
-    render json: { sales_orders: sales_orders.as_json(include: [:client, :advisor, :quotation]) }, status: :ok
+    sales_orders = SalesOrder.includes(:client, :advisor, quotation: :quotation_items).order(created_at: :desc)
+    render json: { sales_orders: sales_orders.as_json(include: [:client, :advisor, quotation: { include: :quotation_items }]) }, status: :ok
   end
 
   def show
-    sales_order = SalesOrder.includes(:client, :advisor, :quotation).find(params[:id])
-    render json: sales_order.as_json(include: [:client, :advisor, :quotation]), status: :ok
+    sales_order = SalesOrder.includes(:client, :advisor, quotation: :quotation_items).find(params[:id])
+    render json: sales_order.as_json(include: [:client, :advisor, quotation: { include: :quotation_items }]), status: :ok
   end
 
   def destroy
