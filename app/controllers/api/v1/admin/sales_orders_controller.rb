@@ -9,6 +9,15 @@ class Api::V1::Admin::SalesOrdersController < ApplicationController
     render json: sales_order.as_json(include: [:client, :advisor, quotation: { include: :quotation_items }]), status: :ok
   end
 
+  def update
+    sales_order = SalesOrder.find(params[:id])
+    if sales_order.update(sales_order_params)
+      render json: { message: 'Orden actualizada correctamente', sales_order: sales_order }, status: :ok
+    else
+      render json: { errors: sales_order.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     sales_order = SalesOrder.find(params[:id])
     if sales_order.destroy
@@ -16,5 +25,11 @@ class Api::V1::Admin::SalesOrdersController < ApplicationController
     else
       render json: { errors: sales_order.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def sales_order_params
+    params.require(:sales_order).permit(:status)
   end
 end
