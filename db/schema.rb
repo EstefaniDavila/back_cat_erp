@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_04_063709) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -237,6 +237,21 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_063709) do
     t.index ["prepared_by_id"], name: "index_dispatch_orders_on_prepared_by_id"
     t.index ["rental_id"], name: "index_dispatch_orders_on_rental_id"
     t.index ["sales_order_id"], name: "index_dispatch_orders_on_sales_order_id"
+  end
+
+  create_table "information_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id"
+    t.string "name"
+    t.string "phone"
+    t.string "subject"
+    t.text "message"
+    t.string "status", default: "pending"
+    t.text "response"
+    t.uuid "advisor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["advisor_id"], name: "index_information_requests_on_advisor_id"
+    t.index ["client_id"], name: "index_information_requests_on_client_id"
   end
 
   create_table "lead_comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -765,6 +780,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_063709) do
   add_foreign_key "dispatch_orders", "rentals"
   add_foreign_key "dispatch_orders", "sales_orders"
   add_foreign_key "dispatch_orders", "users", column: "prepared_by_id"
+  add_foreign_key "information_requests", "clients"
+  add_foreign_key "information_requests", "users", column: "advisor_id"
   add_foreign_key "lead_comments", "leads"
   add_foreign_key "lead_comments", "users"
   add_foreign_key "lead_status_histories", "leads"

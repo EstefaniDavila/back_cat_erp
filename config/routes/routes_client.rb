@@ -16,6 +16,9 @@ Rails.application.routes.draw do
         get '/portal/maintenances', to: 'portal#maintenances'
         get '/portal/orders', to: 'portal#orders'
 
+        # --- RUTAS DE AYUDA (FAQ / MESA DE AYUDA) ---
+        resources :information_requests, only: [:index, :create]
+
       end
     end
   end

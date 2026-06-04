@@ -27,6 +27,9 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         post '/area_requests',                                to: 'area_requests#create'
+        resources :information_requests, only: [:index] do
+          put :respond, on: :member
+        end
       end
     end
   end

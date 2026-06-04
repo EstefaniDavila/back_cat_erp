@@ -304,6 +304,9 @@ Rails.application.routes.draw do
         delete '/product_images/:id', to: 'product_images#destroy'
         get '/products/:product_id/images', to: 'product_images#by_product'
 
+        resources :information_requests, only: [:index] do
+          put :respond, on: :member
+        end
       end
     end
   end
