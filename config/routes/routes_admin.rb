@@ -279,6 +279,16 @@ Rails.application.routes.draw do
         delete '/warehousemen/:id',               to: 'warehousemen#destroy'
 
 
+        ####################### Gestión de Usuarios (Unificado) ##############################
+        get    '/users',                   to: 'users#index'
+        get    '/users/:id',               to: 'users#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/users',                   to: 'users#create'
+        put    '/users/:id',               to: 'users#update'
+        patch  '/users/:id',               to: 'users#update'
+        patch  '/users/:id/toggle_status', to: 'users#toggle_status'
+        patch  '/users/:id/reset_password',to: 'users#reset_password'
+        delete '/users/:id',               to: 'users#destroy'
+
         # Imagenes
         get '/product_images', to: 'product_images#index'
         get '/product_images/:id', to: 'product_images#show'
