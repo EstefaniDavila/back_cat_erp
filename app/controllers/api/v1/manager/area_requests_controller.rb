@@ -43,6 +43,7 @@ class Api::V1::Manager::AreaRequestsController < ApplicationController
         quotation_code: req.quotation.code,
         quotation_items: req.quotation.quotation_items.map { |i| { description: i.description, quantity: i.quantity } },
         creator_email: req.created_by&.email,
+        creator_role: req.created_by&.roleable_type,
         reviewer_email: req.reviewed_by&.email,
         created_at: req.created_at.strftime("%d/%m/%Y %H:%M"),
         updated_at: req.updated_at.strftime("%d/%m/%Y %H:%M")
