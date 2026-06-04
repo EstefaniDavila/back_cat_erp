@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_04_171022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -237,6 +237,30 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
     t.index ["prepared_by_id"], name: "index_dispatch_orders_on_prepared_by_id"
     t.index ["rental_id"], name: "index_dispatch_orders_on_rental_id"
     t.index ["sales_order_id"], name: "index_dispatch_orders_on_sales_order_id"
+  end
+
+  create_table "error_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "title", null: false
+    t.string "module_affected", null: false
+    t.string "severity", null: false
+    t.text "description", null: false
+    t.text "steps_to_reproduce"
+    t.string "evidence_url"
+    t.string "status", default: "pending", null: false
+    t.string "change_type"
+    t.string "change_code"
+    t.text "admin_notes"
+    t.datetime "reviewed_at"
+    t.string "jira_issue_key"
+    t.string "jira_status"
+    t.uuid "reported_by_id", null: false
+    t.uuid "reviewed_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["change_code"], name: "index_error_reports_on_change_code", unique: true, where: "(change_code IS NOT NULL)"
+    t.index ["reported_by_id"], name: "index_error_reports_on_reported_by_id"
+    t.index ["reviewed_by_id"], name: "index_error_reports_on_reviewed_by_id"
+    t.index ["status"], name: "index_error_reports_on_status"
   end
 
   create_table "information_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -604,6 +628,27 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
     t.index ["document_number"], name: "index_suppliers_on_document_number", unique: true
   end
 
+  create_table "system_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description", null: false
+    t.text "steps_to_reproduce"
+    t.string "module_code"
+    t.string "report_type", default: "bug"
+    t.string "priority", default: "medium"
+    t.string "environment"
+    t.integer "status", default: 0
+    t.text "reviewer_notes"
+    t.datetime "reviewed_at"
+    t.string "jira_issue_key"
+    t.string "jira_issue_url"
+    t.uuid "reported_by_id", null: false
+    t.uuid "reviewed_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reported_by_id"], name: "index_system_reports_on_reported_by_id"
+    t.index ["reviewed_by_id"], name: "index_system_reports_on_reviewed_by_id"
+  end
+
   create_table "technicians", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name", default: "", null: false
     t.string "last_name", default: "", null: false
@@ -780,6 +825,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
   add_foreign_key "dispatch_orders", "rentals"
   add_foreign_key "dispatch_orders", "sales_orders"
   add_foreign_key "dispatch_orders", "users", column: "prepared_by_id"
+  add_foreign_key "error_reports", "users", column: "reported_by_id"
+  add_foreign_key "error_reports", "users", column: "reviewed_by_id"
   add_foreign_key "information_requests", "clients"
   add_foreign_key "information_requests", "users", column: "advisor_id"
   add_foreign_key "lead_comments", "leads"
@@ -828,6 +875,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_081159) do
   add_foreign_key "stock_movements", "users", column: "performed_by_id"
   add_foreign_key "supplier_products", "products"
   add_foreign_key "supplier_products", "suppliers"
+  add_foreign_key "system_reports", "users", column: "reported_by_id"
+  add_foreign_key "system_reports", "users", column: "reviewed_by_id"
   add_foreign_key "user_tracks", "users"
   add_foreign_key "vehicle_model_specs", "vehicle_models"
   add_foreign_key "vehicle_models", "vehicle_types"

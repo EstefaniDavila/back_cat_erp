@@ -44,7 +44,7 @@ gem 'lograge'
 gem 'paper_trail'
 gem 'connection_pool', '< 3.0'
 gem 'sidekiq-cron'
-
+gem 'httparty' 
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

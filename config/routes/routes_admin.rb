@@ -306,7 +306,16 @@ Rails.application.routes.draw do
 
         resources :information_requests, only: [:index] do
           put :respond, on: :member
-        end
+        end  
+
+        ####################### GESTIÓN DE REPORTES DE ERRORES ##############################
+        get    '/error_reports',                   to: 'error_reports#index'
+        get    '/error_reports/my_reports',        to: 'error_reports#my_reports'
+        get    '/error_reports/:id',               to: 'error_reports#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/error_reports',                   to: 'error_reports#create'
+        put    '/error_reports/:id',               to: 'error_reports#update', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        patch  '/error_reports/:id/accept',        to: 'error_reports#accept', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        patch  '/error_reports/:id/reject',        to: 'error_reports#reject', constraints: { id: /[0-9a-fA-F\-]{36}/ }  
       end
     end
   end
