@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   has_many :refresh_tokens, dependent: :delete_all
   has_many :blacklisted_tokens, dependent: :delete_all
+  has_many :access_requests_created, class_name: 'AccessRequest', foreign_key: 'created_by_id', dependent: :nullify
   # has_many :password_recoveries, dependent: :delete_all
 
   has_secure_password

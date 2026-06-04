@@ -30,6 +30,10 @@ Rails.application.routes.draw do
         get '/area_requests/:id',                             to: 'area_requests#show'
         post '/area_requests',                                to: 'area_requests#create'
 
+        ####################### ACCESS REQUESTS ####################
+        get '/access_requests',                               to: 'access_requests#index'
+        post '/access_requests',                              to: 'access_requests#create'
+
         ####################### MAINTENANCES ######################
         get '/maintenances',                                  to: 'maintenances#index'
         post '/maintenances',                                 to: 'maintenances#create'

@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_17_204010) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_04_063709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "requested_role"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "document_type"
+    t.string "document_number"
+    t.string "email"
+    t.string "phone"
+    t.string "status", default: "pending"
+    t.uuid "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_access_requests_on_created_by_id"
+  end
 
   create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
@@ -728,6 +743,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_17_204010) do
     t.index ["maintenance_id"], name: "index_work_orders_on_maintenance_id"
   end
 
+  add_foreign_key "access_requests", "users", column: "created_by_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activity_logs", "users"
