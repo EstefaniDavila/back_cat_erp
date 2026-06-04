@@ -21,7 +21,11 @@ class Api::V1::Client::InformationRequestsController < ApplicationController
 
   def index
     if params[:client_id].present?
-      requests = InformationRequest.where(client_id: params[:client_id]).order(created_at: :desc)
+      requests = InformationRequest.where(client_id: params[:client_id]).order(created_at: :desc).map do |req|
+        req.as_json.merge(
+          document_url: req.document.attached? ? url_for(req.document) : nil
+        )
+      end
       render json: { information_requests: requests }, status: :ok
     else
       render json: { message: "client_id requerido" }, status: :bad_request

@@ -1,6 +1,7 @@
 class InformationRequest < ApplicationRecord
   belongs_to :client, optional: true
   belongs_to :advisor, class_name: 'User', optional: true
+  has_one_attached :document
 
   validates :subject, presence: true
   validates :message, presence: true

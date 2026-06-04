@@ -39,7 +39,8 @@ class Api::V1::Advisor::InformationRequestsController < ApplicationController
         status: req.status,
         response: req.response,
         advisor_name: req.advisor&.full_name,
-        created_at: req.created_at.strftime("%d/%m/%Y %H:%M")
+        created_at: req.created_at.strftime("%d/%m/%Y %H:%M"),
+        document_url: req.document.attached? ? url_for(req.document) : nil
       }
     end
 
@@ -56,6 +57,8 @@ class Api::V1::Advisor::InformationRequestsController < ApplicationController
     req = InformationRequest.find(params[:id])
     advisor_id = params[:advisor_id]
     
+    req.document.attach(params[:document]) if params[:document].present?
+
     if req.update(response: params[:response], status: 'resolved', advisor_id: advisor_id)
       render json: { message: "Respuesta guardada y solicitud resuelta", information_request: req }, status: :ok
     else
