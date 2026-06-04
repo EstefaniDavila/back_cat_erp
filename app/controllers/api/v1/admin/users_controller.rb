@@ -83,6 +83,16 @@ module Api
           role_class = roleable_type.constantize
           @role = role_class.new(role_params)
 
+          # Asegurar que se asignen campos obligatorios que no vienen del frontend
+          if @role.respond_to?(:status=) && @role.status.blank?
+            @role.status = 'active'
+          end
+
+          if @role.respond_to?(:code=) && @role.code.blank?
+            # Generar un código único simple
+            @role.code = "#{roleable_type[0..2].upcase}-#{SecureRandom.hex(4).upcase}"
+          end
+
           if @role.save
             # Al guardar el rol, se generó el user. Lo retornamos.
             render json: @role.user.as_json(
