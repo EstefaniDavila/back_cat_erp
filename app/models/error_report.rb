@@ -1,16 +1,10 @@
-# app/models/error_report.rb
 class ErrorReport < ApplicationRecord
   include Sanitizable
 
-  # ---------------------------------------------------------------------------
-  # Asociaciones
-  # ---------------------------------------------------------------------------
+
   belongs_to :reported_by, class_name: "User"
   belongs_to :reviewed_by, class_name: "User", optional: true
 
-  # ---------------------------------------------------------------------------
-  # Enums (más limpio y funcional)
-  # ---------------------------------------------------------------------------
   enum status: {
     pending: "pending",
     accepted: "accepted", 
@@ -42,35 +36,19 @@ class ErrorReport < ApplicationRecord
     other: "other"
   }
 
-  # ---------------------------------------------------------------------------
-  # Constantes (solo lo que no es enum)
-  # ---------------------------------------------------------------------------
   CHANGE_TYPE_PREFIXES = {
     "emergency" => "CHE",
     "normal"    => "CHN",
     "standard"  => "CHS"
   }.freeze
 
-  # ---------------------------------------------------------------------------
-  # Validaciones (simplificadas porque enum ya valida)
-  # ---------------------------------------------------------------------------
   validates :title, presence: true, length: { maximum: 255 }
   validates :description, presence: true
   validates :change_code, uniqueness: true, allow_nil: true
   validates :change_type, presence: true, if: -> { accepted? }
 
-  # ---------------------------------------------------------------------------
-  # Scopes (enum ya provee: pending, accepted, rejected, etc.)
-  # ---------------------------------------------------------------------------
   scope :recent, -> { order(created_at: :desc) }
 
-  # ---------------------------------------------------------------------------
-  # Estado helpers (enum ya provee: pending?, accepted?, rejected?)
-  # ---------------------------------------------------------------------------
-
-  # ---------------------------------------------------------------------------
-  # Acciones de negocio
-  # ---------------------------------------------------------------------------
 
   def accept!(reviewed_by_id:, change_type:, admin_notes: nil)
     raise ArgumentError, "change_type inválido" unless self.class.change_types.key?(change_type)

@@ -1,11 +1,9 @@
-# app/controllers/api/v1/admin/error_reports_controller.rb
 module Api
   module V1
     module Admin
       class ErrorReportsController < ApplicationController
         before_action :set_error_report, only: [:show, :update, :accept, :reject]
 
-        # GET /api/v1/admin/error_reports
         def index
           reports = ErrorReport.includes(:reported_by, :reviewed_by).recent
           reports = reports.where(status: params[:status]) if params[:status].present?
@@ -15,7 +13,6 @@ module Api
           render json: reports.map { |r| report_json(r) }
         end
 
-        # GET /api/v1/admin/error_reports/my_reports
         def my_reports
           reported_by_id = params[:reported_by_id]
           return render json: { error: "reported_by_id es requerido" }, status: :bad_request if reported_by_id.blank?
@@ -24,12 +21,10 @@ module Api
           render json: reports.map { |r| report_json(r) }
         end
 
-        # GET /api/v1/admin/error_reports/:id
         def show
           render json: report_json(@error_report)
         end
 
-        # POST /api/v1/admin/error_reports
         def create
           report = ErrorReport.new(create_params)
           
@@ -40,7 +35,6 @@ module Api
           end
         end
 
-        # PUT /api/v1/admin/error_reports/:id
         def update
           if @error_report.update(update_params)
             render json: report_json(@error_report)
@@ -49,7 +43,6 @@ module Api
           end
         end
 
-        # PATCH /api/v1/admin/error_reports/:id/accept
         def accept
           reviewed_by_id = params[:reviewed_by_id]
           change_type = params[:change_type]
@@ -72,7 +65,6 @@ module Api
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
-        # PATCH /api/v1/admin/error_reports/:id/reject
         def reject
           reviewed_by_id = params[:reviewed_by_id]
           
