@@ -43,6 +43,12 @@ gem 'faraday-retry'
 gem 'lograge'
 gem 'paper_trail'
 gem 'connection_pool', '< 3.0'
+gem 'listen', '>= 3.0.5', '< 3.2'
+
+# Sentry para Monitoreo de Errores (Continuidad de Servicio)
+gem "sentry-ruby"
+gem "sentry-rails"
+
 gem 'sidekiq-cron'
 gem 'httparty' 
 

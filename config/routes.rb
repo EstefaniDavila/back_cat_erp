@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
+      get 'health', to: 'health#index'
+      post 'health/toggle_chaos', to: 'health#toggle_chaos'
+      post 'health/trigger_error', to: 'health#trigger_error'
+      post 'support/classify_incident', to: 'support#classify_incident'
+      
       namespace :general do
         api_guard_routes for: 'users', controller: {
           registration: 'users/registration',

@@ -628,27 +628,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_171022) do
     t.index ["document_number"], name: "index_suppliers_on_document_number", unique: true
   end
 
-  create_table "system_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "title", null: false
-    t.text "description", null: false
-    t.text "steps_to_reproduce"
-    t.string "module_code"
-    t.string "report_type", default: "bug"
-    t.string "priority", default: "medium"
-    t.string "environment"
-    t.integer "status", default: 0
-    t.text "reviewer_notes"
-    t.datetime "reviewed_at"
-    t.string "jira_issue_key"
-    t.string "jira_issue_url"
-    t.uuid "reported_by_id", null: false
-    t.uuid "reviewed_by_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["reported_by_id"], name: "index_system_reports_on_reported_by_id"
-    t.index ["reviewed_by_id"], name: "index_system_reports_on_reviewed_by_id"
-  end
-
   create_table "technicians", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name", default: "", null: false
     t.string "last_name", default: "", null: false
@@ -875,8 +854,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_04_171022) do
   add_foreign_key "stock_movements", "users", column: "performed_by_id"
   add_foreign_key "supplier_products", "products"
   add_foreign_key "supplier_products", "suppliers"
-  add_foreign_key "system_reports", "users", column: "reported_by_id"
-  add_foreign_key "system_reports", "users", column: "reviewed_by_id"
   add_foreign_key "user_tracks", "users"
   add_foreign_key "vehicle_model_specs", "vehicle_models"
   add_foreign_key "vehicle_models", "vehicle_types"

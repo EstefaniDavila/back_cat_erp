@@ -1,0 +1,17 @@
+ALERTA CRÍTICA DE CONTINUIDAD DE SERVICIO
+=========================================
+
+Se ha detectado una caída severa en la Base de Datos Principal (PostgreSQL).
+
+Detalles del Incidente:
+- Servidor Afectado: <%= @server_ip %>
+- Hora de detección: <%= @time %>
+- Estado Actual: DESCONECTADO (Timeout)
+- Gravedad: P1 (Crítico)
+
+PLAN DE CONTINGENCIA REQUERIDO (FAILOVER):
+Por favor, ingrese inmediatamente al panel de control y modifique las variables de entorno para que el sistema apunte a la Base de Datos de Respaldo (Réplica) hasta que se restablezca el servicio principal.
+
+--
+Sistema de Monitoreo Automatizado
+ERP CAT
