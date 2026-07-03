@@ -1,7 +1,7 @@
 lock "~> 3.20.0"
 
 set :application, "davcat"
-set :repo_url, "git@github.com:Yamada-decs/back_cat_erp.git"
+set :repo_url, "git@github.com:EstefaniDavila/back_cat_erp.git"
 set :branch, :main
 
 set :deploy_to, "/root/davcat"
