@@ -220,9 +220,10 @@ class Api::V1::HealthController < ApplicationController
   private
 
   def perform_failback_sync
-    # 1. Definir tablas críticas a sincronizar
+    # 1. Definir tablas críticas a sincronizar (ordenadas por dependencias)
     models_to_sync = [
-      User, Client, Lead, Quotation, 
+      Admin, Advisor, Client, LogisticsUser, Manager, Technician,
+      User, Lead, Quotation, 
       AccessRequest, InformationRequest, AreaRequest,
       QuotationStatusHistory, LeadStatusHistory
     ]
