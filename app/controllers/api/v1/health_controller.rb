@@ -221,7 +221,11 @@ class Api::V1::HealthController < ApplicationController
 
   def perform_failback_sync
     # 1. Definir tablas críticas a sincronizar
-    models_to_sync = [User, Client, Lead, Quotation]
+    models_to_sync = [
+      User, Client, Lead, Quotation, 
+      AccessRequest, InformationRequest, AreaRequest,
+      QuotationStatusHistory, LeadStatusHistory
+    ]
     
     # 2. Conectarse a la réplica y descargar datos
     ActiveRecord::Base.establish_connection(:replica)
