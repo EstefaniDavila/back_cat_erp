@@ -233,11 +233,19 @@ class Api::V1::HealthController < ApplicationController
     # 3. Reconectarse a la base principal
     ActiveRecord::Base.establish_connection(Rails.env.to_sym)
     
-    # 4. Insertar registros faltantes
+    # 4. Insertar registros faltantes o actualizar editados
     models_to_sync.each do |model|
       records = replica_data[model.name]
       records.each do |record|
-        unless model.exists?(id: record.id)
+        existing = model.find_by(id: record.id)
+        if existing
+          # Si existe en principal, lo actualizamos solo si fue editado en la réplica
+          if record.updated_at > existing.updated_at
+            existing.assign_attributes(record.attributes.except('id', 'created_at'))
+            existing.save(validate: false)
+          end
+        else
+          # Si no existe, lo creamos
           new_record = record.dup
           new_record.id = record.id
           new_record.created_at = record.created_at
