@@ -122,9 +122,9 @@
           <h3>⚡ PLAN DE CONTINGENCIA REQUERIDO (FAILOVER)</h3>
           <p>Para asegurar la continuidad del servicio de ERP CAT, el equipo de TI debe ejecutar inmediatamente el protocolo de Failover:</p>
           <ol>
-            <li>Ingresar al panel de configuración del servidor.</li>
-            <li>Modificar las variables de entorno para apuntar hacia la <strong>Base de Datos de Respaldo (Réplica)</strong>.</li>
-            <li>Reiniciar los servicios de backend para forzar la reconexión.</li>
+            <li>Ingresar por SSH al servidor principal.</li>
+            <li>Navegar a la carpeta del proyecto (<code>cd ~/integrador/back_cat_erp</code>).</li>
+            <li>Levantar el entorno de contingencia usando Docker: <br><br> <strong><code>./start_docker.sh</code></strong></li>
           </ol>
         </div>
       </div>

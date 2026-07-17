@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       get 'health', to: 'health#index'
       post 'health/toggle_chaos', to: 'health#toggle_chaos'
       post 'health/trigger_error', to: 'health#trigger_error'
+      post 'health/ai_diagnosis', to: 'health#ai_diagnosis'
+      post 'health/ai_chat', to: 'health#ai_chat'
       post 'support/classify_incident', to: 'support#classify_incident'
       
       namespace :general do

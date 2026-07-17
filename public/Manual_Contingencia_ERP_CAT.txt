@@ -1,0 +1,32 @@
+# MANUAL DE CONTINGENCIA E INSTALACIÓN - ERP CAT
+
+## 1. OBJETIVO
+Proporcionar los pasos exactos para restablecer el servicio del sistema ERP CAT ante una caída catastrófica de la base de datos principal, levantando el entorno contenerizado mediante Docker.
+
+## 2. REQUISITOS PREVIOS
+- Acceso SSH al servidor principal.
+- Permisos de administrador (root o sudo).
+- Docker y Docker Compose instalados en el servidor.
+
+## 3. PASOS DE RECUPERACIÓN (FAILOVER)
+
+**Paso 1:** Conectarse al servidor vía SSH.
+`ssh root@198.199.70.32`
+
+**Paso 2:** Navegar al directorio del proyecto Backend.
+`cd ~/integrador/back_cat_erp`
+
+**Paso 3:** Ejecutar el script automatizado de Docker.
+`./start_docker.sh`
+
+Este script se encargará de:
+- Detener contenedores colgados.
+- Reconstruir la imagen de Ruby/Rails instalando las gemas necesarias (incluyendo dependencias nativas como ImageMagick).
+- Levantar el servidor Puma en el puerto 3000 de forma silenciosa (detached).
+
+## 4. VERIFICACIÓN
+Ingrese a la URL del health check para verificar que el servicio esté respondiendo:
+`http://[IP_DEL_SERVIDOR]:3000/api/v1/health`
+
+## 5. REVERSIÓN (FAILBACK)
+Una vez restaurada la base de datos principal, diríjase al Dashboard de Monitoreo y presione el botón "Volver a BD Principal" para regresar a la normalidad.

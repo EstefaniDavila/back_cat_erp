@@ -71,7 +71,8 @@ class Api::V1::SupportController < ApplicationController
     if response.is_a?(Net::HTTPSuccess)
       begin
         body = JSON.parse(response.body)
-        claude_text = body["content"][0]["text"]
+        text_block = body["content"].find { |b| b["type"] == "text" }
+        claude_text = text_block ? text_block["text"] : ""
         
         json_match = claude_text.match(/\{.*\}/m)
         if json_match
