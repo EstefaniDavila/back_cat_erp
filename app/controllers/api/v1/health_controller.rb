@@ -97,6 +97,13 @@ class Api::V1::HealthController < ApplicationController
 
     when :replica
       # PASO 3: Réplica -> Volver a Normal (Main DB)
+      # Antes de volver, sincronizamos los datos perdidos
+      begin
+        perform_failback_sync
+      rescue => e
+        puts "Error durante sincronización: #{e.message}"
+      end
+
       @@db_state = :normal
       begin
         ActiveRecord::Base.establish_connection(Rails.env.to_sym)
@@ -104,7 +111,7 @@ class Api::V1::HealthController < ApplicationController
         puts "Error al restaurar conexión principal: #{e.message}"
       end
       
-      render json: { chaos_active: false, state: 'normal', message: 'Servicios restaurados: Conexión a la base de datos principal reestablecida.' }
+      render json: { chaos_active: false, state: 'normal', message: 'Servicios restaurados y sincronizados: Conexión a la base de datos principal reestablecida.' }
     end
   end
 
@@ -207,6 +214,37 @@ class Api::V1::HealthController < ApplicationController
       end
     rescue StandardError => e
       render json: { reply: "Error interno en chat IA: #{e.message}" }, status: :internal_server_error
+    end
+  end
+
+  private
+
+  def perform_failback_sync
+    # 1. Definir tablas críticas a sincronizar
+    models_to_sync = [User, Client, Lead, Quotation]
+    
+    # 2. Conectarse a la réplica y descargar datos
+    ActiveRecord::Base.establish_connection(:replica)
+    replica_data = {}
+    models_to_sync.each do |model|
+      replica_data[model.name] = model.all.to_a
+    end
+
+    # 3. Reconectarse a la base principal
+    ActiveRecord::Base.establish_connection(Rails.env.to_sym)
+    
+    # 4. Insertar registros faltantes
+    models_to_sync.each do |model|
+      records = replica_data[model.name]
+      records.each do |record|
+        unless model.exists?(id: record.id)
+          new_record = record.dup
+          new_record.id = record.id
+          new_record.created_at = record.created_at
+          new_record.updated_at = record.updated_at
+          new_record.save(validate: false)
+        end
+      end
     end
   end
 end
