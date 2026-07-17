@@ -6,8 +6,8 @@ class IncidentMailer < ApplicationMailer
     @server_ip = "DigitalOcean VPS (142.12.33.1)"
     
     # Adjuntar el manual de contingencia al correo
-    file_path = Rails.root.join('public', 'Manual_Contingencia_ERP_CAT.txt')
-    attachments['Manual_Contingencia_Docker.txt'] = File.read(file_path) if File.exist?(file_path)
+    file_path = Rails.root.join('public', 'Manual_Contingencia_ERP_CAT.docx')
+    attachments['Plan_de_Contingencia_ERP_CAT.docx'] = File.read(file_path) if File.exist?(file_path)
 
     mail(to: admin_email, subject: '[URGENTE] ALERTA CRÍTICA - Caída de Base de Datos Principal')
   end
